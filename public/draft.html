@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <script src="https://kit.fontawesome.com/180a7c6a5d.js" crossorigin="anonymous"></script>
     <style>
         * {
             margin: 0;
@@ -24,11 +25,13 @@
             height: 100%;
 
             background-color: rgb(245, 245, 245);
+
+            overflow: hidden;
         }
 
         #topbar {
             display: grid;
-            grid-template: 1fr / repeat(3, 1fr);
+            grid-template: 1fr / 1fr 2fr 1fr;
             align-items: center;
 
             width: 100%;
@@ -47,24 +50,35 @@
         }
 
         #search-input {
-            align-self: center;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            justify-self: center;
 
-            height: 2rem;
+            width: 100%;
+            max-width: 30rem;
+            height: 2.5rem;
 
-            border: none;
-            outline: none;
-            border-radius: .25rem;
+            margin: 0 12px;
+            padding: 8px;
 
-            font-size: 1rem;
+            border-radius: 4px;
+
+            background-color: rgb(255, 255, 255);
         }
 
         #search-input input {
-            height: 2rem;
+            width: 100%;
+            height: 100%;
+
+            margin: 0 8px;
 
             border: none;
             outline: none;
 
             font-size: 1rem;
+            line-height: 1.5rem;
         }
 
         #avatar {
@@ -96,8 +110,46 @@
             background-color: rgb(255, 255, 255);
         }
 
+        #menu > div {
+            height: 6rem;
+        }
+
+        .menu__item {
+            height: 3rem;
+
+            padding: 0 24px;
+        }
+
         #container {
+            width: 100%;
+
             padding: 2rem;
+        }
+
+        #info {
+            display: flex;
+            flex-flow: column nowrap;
+
+            padding: 8px;
+        }
+
+        #info > div {
+            display: flex;
+            flex-flow: row nowrap;
+            align-items: center;
+        }
+
+        #display-mode {
+            margin-left: 8px;
+
+            font-size: 2rem;
+        }
+
+        #date {
+            margin-top: 8px;
+
+            font-size: 1rem;
+            font-weight: 100;
         }
 
         @media (max-width: 900px) {
@@ -113,15 +165,26 @@
         <div id="topbar">
             <h1 id="app-title">Easy TODO</h1>
             <div id="search-input">
+                <i class="fa-solid fa-magnifying-glass fa-rotate-90 fa-lg" style="color: rgb(255, 128, 0);"></i>
                 <input type="text">
             </div>
             <div id="avatar"></div>
         </div>
         <main id="content">
-            <div id="menu">2333</div>
+            <div id="menu">
+                <div>
+
+                </div>
+                <button class="menu__item"></button>
+            </div>
             <div id="container">
-                666666666666666666666666666666666666666666666666666666
-                <section id="info"></section>
+                <section id="info">
+                    <div>
+                        <i class="fa-regular fa-sun fa-2xl"></i>
+                        <div id="display-mode">我的一天</div>
+                    </div>
+                    <div id="date">七月 10日 星期一</div>
+                </section>
                 <section id="todo-box"></section>
                 <section id="done-box"></section>
             </div>
