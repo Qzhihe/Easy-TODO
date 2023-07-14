@@ -1,21 +1,17 @@
-import { Fragment } from 'react';
-import styled from 'styled-components';
+import { Fragment } from "react";
+import styled from "styled-components";
 
-import Topbar from './Topbar';
+import Topbar from "./Topbar";
 
 const Layout = (props) => {
-    const {
-        children
-    } = props;
+    const { children } = props;
 
     return (
         <Fragment>
             <Wrapper>
                 <Topbar></Topbar>
 
-                <MainWrapper>
-                    {children}
-                </MainWrapper>
+                <MainWrapper>{children}</MainWrapper>
             </Wrapper>
         </Fragment>
     );
