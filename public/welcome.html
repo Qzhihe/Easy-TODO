@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>欢迎欢迎</title>
+    <style>
+        body {
+            width:100vw;
+            height:100vh;
+            position: relative;
+            overflow: hidden;
+            background:transparent url('./sunset.jpg') center no-repeat;
+            background-attachment: fixed;
+            background-size: cover;
+        }
+        /* body::before {NND什么魔鬼模糊
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('./sunset.jpg') center center no-repeat;
+            background-attachment: fixed;
+            background-size: cover;
+            filter: blur(5px);
+            z-index: -1;
+        } */
+        .container {
+            margin: auto;
+
+            width: 90%;
+            height: 90%;
+
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+
+            padding: 10px;
+        }
+
+        .navbar {
+            /* background-color: aliceblue; */
+            height: 10vh;
+            width: 100%;
+            text-align: right;
+        }
+        hr {
+            border: 1px solid gray;
+        }
+        .nav {
+            font-size: 15px;
+            margin: 10px;
+        }
+        .nav:hover {
+            color: gray;
+            cursor: pointer;
+        }
+
+        .content {
+            /* background-color: antiquewhite; */
+            height: 20vh;
+            width: 100%;
+
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+
+            overflow: hidden;
+        }
+        .msg {
+            margin-left: 100px;
+            font-size: 20px;
+            font-weight: 300;
+        }
+        .title {
+            margin-left: 100px;
+            display: flex;
+            padding-right: 50px;
+            align-items: baseline;
+        }
+        .text {
+            font-size: 50px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .cir {
+            margin-left: 5px;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: rgb(0, 255, 55);
+        }
+
+        .footer {
+            /* background-color: aqua; */
+            height: 10vh;
+            width: 100%;
+            text-align: center;
+        }
+        .other {
+            display: flex;
+            justify-content: space-around;
+            font-size: 10px;
+            color: black;
+        }
+        .qrimg {
+            height: 60px;
+            width: 60px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="navbar">
+            <hr />
+            <i class="nav">Sign In</i>
+            <i class="nav">Github</i>
+        </div>
+        <div class="content">
+            <p class="msg">更轻 更简 更快</p>
+            <div class="title">
+                <div class="text">Easy TODO</div>
+                <div class="cir"></div>
+            </div>
+        </div>
+        <div class="footer">
+            <hr />
+            <div class="other">
+                <div class="about">
+                    <p>关于项目</p>
+                    <p>这是一个简单的个人日程管理系统:D</p>
+                    <p>7/10/2023 by Fword-TODOS-Team</p>
+                </div>
+                <div class="concat">
+                    <p>进群交流</p>
+                    <img class="qrimg" src="./feishuQR.png" />
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
