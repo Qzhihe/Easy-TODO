@@ -16,10 +16,22 @@ export default function SignInSide() {
     const handleSubmit = (event) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
-        console.log({
-            email: data.get("email"),
-            password: data.get("password"),
-        });
+        let email = data.get("email"),
+            password = data.get("password");
+        
+        // 验证表单是否有空
+        if (!email || !password) {
+            alert('不能为空！');
+            return;
+        }
+
+        console.log(email, password);
+
+        // 准备发请求
+        let userInfo = {
+            email,
+            password
+        };
     };
 
     return (
@@ -104,8 +116,13 @@ export default function SignInSide() {
                             </Button>
                             <Grid container>
                                 <Grid item xs>
-                                    <Link href="#" variant="body2">
+                                    <Link href="signup" variant="body2">
                                         {"没有账号,免费注册"}
+                                    </Link>
+                                </Grid>
+                                <Grid item>
+                                    <Link href="/" variant="body2">
+                                        {"返回首页"}
                                     </Link>
                                 </Grid>
                             </Grid>

@@ -22,13 +22,17 @@ export default function SignUp() {
             password = data.get("psw"),
             password1 = data.get('psw1');
 
-        // 验证注册信息合法性
+        // 验证表单是否有空项
         if (!email || !name || !password || !password1) {
             alert('注册内容不能为空！');
             return;
         }
-        console.log(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/.test(password));
-        
+        // 验证密码合法性
+        if (!/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/.test(password)) {
+            alert('密码格式不对！');
+            return;
+        }
+        // 验证两次密码是否相同
         if (password !== password1) {
             alert('两次输入密码不同，请重新检查！');
             return;
@@ -40,11 +44,19 @@ export default function SignUp() {
             password,
             password1
         });
+
+        // 发送添加请求
+        let userInfo = {
+            email, // 邮箱
+            name, // 用户名
+            password // 密码
+        };
+        
     };
 
     return (
         <ThemeProvider theme={defaultTheme}>
-            <Container component="main" maxWidth="xs">
+            <Container component="main" maxWidth="xs" sx={{ overflow: "hidden" }}>
                 <CssBaseline />
                 <Box
                     sx={{
@@ -74,6 +86,7 @@ export default function SignUp() {
                                     label="邮箱"
                                     name="email"
                                     autoComplete="email"
+                                    autoFocus
                                 />
                             </Grid>
                             <Grid item xs={12}>
@@ -84,7 +97,6 @@ export default function SignUp() {
                                     fullWidth
                                     id="name"
                                     label="用户名"
-                                    autoFocus
                                 />
                             </Grid>
                             <Grid item xs={12}>
@@ -119,9 +131,14 @@ export default function SignUp() {
                             注册
                         </Button>
                         <Grid container justifyContent="flex-end">
-                            <Grid item>
-                                <Link href="#" variant="body2">
+                            <Grid item xs>
+                                <Link href="signin" variant="body2">
                                     已有账号, 去登录
+                                </Link>
+                            </Grid>
+                            <Grid item>
+                                <Link href="/" variant="body2">
+                                    返回首页
                                 </Link>
                             </Grid>
                         </Grid>

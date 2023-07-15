@@ -1,9 +1,22 @@
+import React, { useState } from 'react';
+import { Button, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from '@mui/material';
+
 import { Fragment } from "react";
 import styled from "styled-components";
+import { Link } from 'react-router-dom';
 
 const Welcome = (props) => {
-    const toGithub = function() {
+    // 跳转至GitHub主仓库
+    const toGithub = () => {
         window.open("https://github.com/Qzhihe/Easy-TODO");
+    };
+    // 展示大图
+    const [open, setOpen] = useState(false);
+    const handleClickImg = () => {
+        setOpen(true);
+    };
+    const handleClose = () => {
+        setOpen(false);
     };
 
     return (
@@ -12,8 +25,14 @@ const Welcome = (props) => {
                 <div className="container">
                     <div className="navbar">
                         <hr />
-                        <i className="nav">Sign In</i>
-                        <i className="nav" onClick={toGithub}>Github</i>
+                        <i className="nav">
+                            <Link to="/signin">
+                                Sign In
+                            </Link>
+                        </i>
+                        <i className="nav" onClick={toGithub}>
+                            Github
+                        </i>
                     </div>
                     <div className="content">
                         <p className="msg">更轻 更简 更快</p>
@@ -36,7 +55,28 @@ const Welcome = (props) => {
                                     className="qrimg"
                                     src="./feishuQR.png"
                                     alt="飞书"
+                                    onClick={handleClickImg}
                                 />
+                                <Dialog open={open} onClose={handleClose}>
+                                    <DialogTitle>飞书交流群</DialogTitle>
+                                    <DialogContent>
+                                        <DialogContentText>
+                                            <img
+                                                src="./feishuQR.png"
+                                                alt="feishu"
+                                                style={{
+                                                    width: "100%",
+                                                    height: "auto",
+                                                }}
+                                            />
+                                        </DialogContentText>
+                                    </DialogContent>
+                                    <DialogActions>
+                                        <Button onClick={handleClose}>
+                                            关闭
+                                        </Button>
+                                    </DialogActions>
+                                </Dialog>
                             </div>
                         </div>
                     </div>
@@ -82,7 +122,7 @@ const Wrapper = styled.div`
         border: 1px solid gray;
     }
     .nav {
-        font-size: 15px;
+        font-size: 18px;
         margin: 10px;
     }
     .nav:hover {
@@ -130,15 +170,20 @@ const Wrapper = styled.div`
         height: 10vh;
         width: 100%;
         text-align: center;
+        margin-top: 100px;
     }
     .other {
+        margin-top: 10px;
+        padding: 5px;
         display: flex;
         justify-content: space-around;
-        font-size: 10px;
+        font-size: 15px;
+        font-weight: 400;
         color: black;
     }
     .qrimg {
         height: 60px;
         width: 60px;
+        cursor: pointer;
     }
 `;
