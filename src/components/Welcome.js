@@ -18,6 +18,15 @@ const Welcome = (props) => {
     const handleClose = () => {
         setOpen(false);
     };
+    // 随机诗词
+    const [msg, setShici] = useState('试试点击↑');
+    const randomShici = () => {
+        const jinrishici = require('jinrishici');
+        jinrishici.load(result => {
+            setShici(result.data.content);
+            console.log(msg);
+        });
+    };
 
     return (
         <Fragment>
@@ -37,9 +46,10 @@ const Welcome = (props) => {
                     <div className="content">
                         <p className="msg">更轻 更简 更快</p>
                         <div className="title">
-                            <div className="text">Easy TODO</div>
+                            <div className="text" onClick={randomShici}>Easy TODO</div>
                             <div className="cir"></div>
                         </div>
+                        <p className="msg">{msg}</p>
                     </div>
                     <div className="footer">
                         <hr />

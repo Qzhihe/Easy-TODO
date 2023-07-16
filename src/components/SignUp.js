@@ -13,10 +13,8 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 const defaultTheme = createTheme();
 
 export default function SignUp() {
-    const handleSubmit = (event) => {
-        event.preventDefault();
-        const data = new FormData(event.currentTarget);
-
+    // 验证注册表单内容
+    const checkForm = (data) => {
         let email = data.get('email'),
             name = data.get('name'),
             password = data.get("psw"),
@@ -37,13 +35,6 @@ export default function SignUp() {
             alert('两次输入密码不同，请重新检查！');
             return;
         }
-        
-        console.log({
-            email,
-            name,
-            password,
-            password1
-        });
 
         // 发送添加请求
         let userInfo = {
@@ -51,7 +42,15 @@ export default function SignUp() {
             name, // 用户名
             password // 密码
         };
-        
+
+        console.log(userInfo);
+    };
+
+    // 点击“注册”提交表单
+    const handleSubmit = (event) => {
+        event.preventDefault();      
+        const data = new FormData(event.currentTarget);
+        checkForm(data);
     };
 
     return (

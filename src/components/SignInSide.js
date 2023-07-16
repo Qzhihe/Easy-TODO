@@ -13,9 +13,8 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 const defaultTheme = createTheme();
 
 export default function SignInSide() {
-    const handleSubmit = (event) => {
-        event.preventDefault();
-        const data = new FormData(event.currentTarget);
+    // 验证登录表单
+    const checkForm = (data) => {
         let email = data.get("email"),
             password = data.get("password");
         
@@ -32,6 +31,15 @@ export default function SignInSide() {
             email,
             password
         };
+
+        console.log(userInfo);
+    };
+
+    // 点击“登录”提交表单
+    const handleSubmit = (event) => {
+        event.preventDefault();
+        const data = new FormData(event.currentTarget);
+        checkForm(data);
     };
 
     return (
