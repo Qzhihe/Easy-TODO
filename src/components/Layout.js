@@ -1,40 +1,30 @@
 import { Fragment } from "react";
-import styled from "styled-components";
 
 import Topbar from "./Topbar";
+import Navbar from "./Navbar/Navbar";
+import { Box, Paper } from "@mui/material";
 
 const Layout = (props) => {
     const { children } = props;
 
     return (
         <Fragment>
-            <Wrapper>
-                <Topbar></Topbar>
-
-                <MainWrapper>{children}</MainWrapper>
-            </Wrapper>
+            <Paper
+                sx={{
+                    display: "grid",
+                    gridTemplate: "max-content 1fr / max-content 1fr ",
+                    width: "100%",
+                    height: "100%",
+                    boxShadow: "none",
+                    backgroundColor: "rgb(245, 245, 245)",
+                }}
+            >
+                <Topbar />
+                <Navbar />
+                <Box sx={{ padding: "1rem 2rem" }}>{children}</Box>
+            </Paper>
         </Fragment>
     );
 };
 
 export default Layout;
-
-const Wrapper = styled.div`
-    & {
-        width: 100%;
-        height: 100%;
-
-        background-color: rgb(245, 245, 245);
-
-        overflow: hidden;
-    }
-`;
-
-const MainWrapper = styled.main`
-    & {
-        display: flex;
-        flex-flow: row nowrap;
-
-        height: calc(100% - 3.5rem);
-    }
-`;

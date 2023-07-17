@@ -1,11 +1,18 @@
-import React, { useState } from 'react';
-import { Button, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from '@mui/material';
+import React, { useState } from "react";
+import {
+    Button,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogContentText,
+    DialogActions,
+} from "@mui/material";
 
 import { Fragment } from "react";
 import styled from "styled-components";
-import { Link } from 'react-router-dom';
+import { Link } from "react-router-dom";
 
-const Welcome = (props) => {
+const WelcomePage = (props) => {
     // 跳转至GitHub主仓库
     const toGithub = () => {
         window.open("https://github.com/Qzhihe/Easy-TODO");
@@ -19,10 +26,10 @@ const Welcome = (props) => {
         setOpen(false);
     };
     // 随机诗词
-    const [msg, setShici] = useState('试试点击↑');
+    const [msg, setShici] = useState("试试点击↑");
     const randomShici = () => {
-        const jinrishici = require('jinrishici');
-        jinrishici.load(result => {
+        const jinrishici = require("jinrishici");
+        jinrishici.load((result) => {
             setShici(result.data.content);
             console.log(msg);
         });
@@ -35,9 +42,7 @@ const Welcome = (props) => {
                     <div className="navbar">
                         <hr />
                         <i className="nav">
-                            <Link to="/signin">
-                                Sign In
-                            </Link>
+                            <Link to="/signin">Sign In</Link>
                         </i>
                         <i className="nav" onClick={toGithub}>
                             Github
@@ -46,7 +51,13 @@ const Welcome = (props) => {
                     <div className="content">
                         <p className="msg">更轻 更简 更快</p>
                         <div className="title">
-                            <div className="text" onClick={randomShici}>Easy TODO</div>
+                            <div
+                                className="text"
+                                onClick={randomShici}
+                                style={{ userSelect: "none" }}
+                            >
+                                Easy TODO
+                            </div>
                             <div className="cir"></div>
                         </div>
                         <p className="msg">{msg}</p>
@@ -96,7 +107,7 @@ const Welcome = (props) => {
     );
 };
 
-export default Welcome;
+export default WelcomePage;
 
 const Wrapper = styled.div`
     width: 100%;

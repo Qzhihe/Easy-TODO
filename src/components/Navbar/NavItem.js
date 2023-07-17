@@ -10,19 +10,27 @@ import {
 } from "@mui/material";
 
 const NavItem = (props) => {
-    const { icon, title, isActive } = props;
+    const { id, icon, title, isActive, onClick } = props;
+
+    function innerClickHandler(id) {
+        onClick(id);
+    }
 
     return (
         <Fragment>
-            <ListItem sx={{ margin: 0, padding: 0, isActive }}>
+            <ListItem
+                sx={{ margin: 0, padding: 0, isActive }}
+                onClick={() => innerClickHandler(id)}
+            >
                 <ListItemButton sx={{ height: "3rem" }}>
-                    <ListItemIcon sx={{ minWidth: 0 }}>
-                        <FontAwesomeIcon icon={icon} size="xl" />
-                    </ListItemIcon>
+                    {icon && (
+                        <ListItemIcon sx={{ minWidth: 0, mr: "8px" }}>
+                            <FontAwesomeIcon icon={icon} size="xl" />
+                        </ListItemIcon>
+                    )}
                     <ListItemText
                         primary={title}
                         primaryTypographyProps={{ fontWeight: 600 }}
-                        sx={{ margin: "0 8px" }}
                     />
                     <ListItemText
                         primary={0}
