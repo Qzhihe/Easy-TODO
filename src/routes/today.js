@@ -81,11 +81,6 @@ const TodayPage = (props) => {
                     placeholder="添加任务"
                 />
             </Card>
-            <Box>
-                {
-                    
-                }
-            </Box>
         </Fragment>
     );
 };
