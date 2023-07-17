@@ -11,29 +11,34 @@ import {
 import { Fragment } from "react";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
+import throttled from "../utils/throttled";
 
 const WelcomePage = (props) => {
+    const [open, setOpen] = useState(false);
+    const [msg, setShici] = useState("试试点击↑");
+
     // 跳转至GitHub主仓库
-    const toGithub = () => {
+    function toGithub () {
         window.open("https://github.com/Qzhihe/Easy-TODO");
     };
+
     // 展示大图
-    const [open, setOpen] = useState(false);
-    const handleClickImg = () => {
+    function handleClickImg () {
         setOpen(true);
     };
-    const handleClose = () => {
+    function handleClose () {
         setOpen(false);
     };
+
     // 随机诗词
-    const [msg, setShici] = useState("试试点击↑");
-    const randomShici = () => {
+    function shici(){
         const jinrishici = require("jinrishici");
         jinrishici.load((result) => {
             setShici(result.data.content);
             console.log(msg);
         });
     };
+    const randomShici = throttled(shici, 500);
 
     return (
         <Fragment>

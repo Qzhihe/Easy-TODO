@@ -12,7 +12,7 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 
 const defaultTheme = createTheme();
 
-export default function SignUp() {
+export default function SignUpPage() {
     // 验证注册表单内容
     const checkForm = (data) => {
         let email = data.get('email'),
