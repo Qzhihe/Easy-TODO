@@ -14,7 +14,7 @@ const Layout = (props) => {
                     display: "grid",
                     gridTemplate: "max-content 1fr / max-content 1fr ",
                     width: "100%",
-                    height: "100%",
+                    minHeight: "100%",
                     boxShadow: "none",
                     backgroundColor: "rgb(245, 245, 245)",
                 }}
