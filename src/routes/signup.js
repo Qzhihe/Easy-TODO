@@ -15,24 +15,24 @@ const defaultTheme = createTheme();
 export default function SignUpPage() {
     // 验证注册表单内容
     const checkForm = (data) => {
-        let email = data.get('email'),
-            name = data.get('name'),
+        let email = data.get("email"),
+            name = data.get("name"),
             password = data.get("psw"),
-            password1 = data.get('psw1');
+            password1 = data.get("psw1");
 
         // 验证表单是否有空项
         if (!email || !name || !password || !password1) {
-            alert('注册内容不能为空！');
+            alert("注册内容不能为空！");
             return;
         }
         // 验证密码合法性
         if (!/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/.test(password)) {
-            alert('密码格式不对！');
+            alert("密码格式不对！");
             return;
         }
         // 验证两次密码是否相同
         if (password !== password1) {
-            alert('两次输入密码不同，请重新检查！');
+            alert("两次输入密码不同，请重新检查！");
             return;
         }
 
@@ -40,7 +40,7 @@ export default function SignUpPage() {
         let userInfo = {
             email, // 邮箱
             name, // 用户名
-            password // 密码
+            password, // 密码
         };
 
         console.log(userInfo);
@@ -48,14 +48,18 @@ export default function SignUpPage() {
 
     // 点击“注册”提交表单
     const handleSubmit = (event) => {
-        event.preventDefault();      
+        event.preventDefault();
         const data = new FormData(event.currentTarget);
         checkForm(data);
     };
 
     return (
         <ThemeProvider theme={defaultTheme}>
-            <Container component="main" maxWidth="xs" sx={{ overflow: "hidden" }}>
+            <Container
+                component="main"
+                maxWidth="xs"
+                sx={{ overflow: "hidden" }}
+            >
                 <CssBaseline />
                 <Box
                     sx={{
@@ -65,8 +69,7 @@ export default function SignUpPage() {
                         alignItems: "center",
                     }}
                 >
-                    <Avatar sx={{ m: 1, bgcolor: "orange" }}>
-                    </Avatar>
+                    <Avatar sx={{ m: 1, bgcolor: "orange" }}></Avatar>
                     <Typography component="h1" variant="h5">
                         注册
                     </Typography>

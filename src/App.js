@@ -1,8 +1,8 @@
-import { RouterProvider } from "react-router-dom";
-import GlobalStyle from "./GlobalStyle";
-
-import router from "./router";
 import { Fragment } from "react";
+import router from "./router";
+import GlobalStyle from "./GlobalStyle";
+import { RouterProvider } from "react-router-dom";
+
 
 function App() {
     return (
