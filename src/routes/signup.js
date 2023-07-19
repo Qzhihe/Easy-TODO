@@ -9,6 +9,7 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
+import validate from "../utils/validate";
 
 const defaultTheme = createTheme();
 
@@ -16,20 +17,25 @@ export default function SignUpPage() {
     // 验证注册表单内容
     const checkForm = (data) => {
         let email = data.get('email'),
-            name = data.get('name'),
             password = data.get("psw"),
             password1 = data.get('psw1');
 
         // 验证表单是否有空项
-        if (!email || !name || !password || !password1) {
+        if (!email || !password || !password1) {
             alert('注册内容不能为空！');
             return;
         }
-        // 验证密码合法性
-        if (!/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/.test(password)) {
-            alert('密码格式不对！');
+        // 验证邮箱合法性
+        if (!validate.valiEmail(email)) {
+            alert('邮箱格式不对');
             return;
         }
+        // 验证密码合法性
+        if (!validate.valiPwd(password)) {
+            alert('密码格式不对');
+            return;
+        }
+
         // 验证两次密码是否相同
         if (password !== password1) {
             alert('两次输入密码不同，请重新检查！');
@@ -39,7 +45,6 @@ export default function SignUpPage() {
         // 发送添加请求
         let userInfo = {
             email, // 邮箱
-            name, // 用户名
             password // 密码
         };
 
@@ -86,16 +91,6 @@ export default function SignUpPage() {
                                     name="email"
                                     autoComplete="email"
                                     autoFocus
-                                />
-                            </Grid>
-                            <Grid item xs={12}>
-                                <TextField
-                                    autoComplete="given-name"
-                                    name="name"
-                                    required
-                                    fullWidth
-                                    id="name"
-                                    label="用户名"
                                 />
                             </Grid>
                             <Grid item xs={12}>
