@@ -5,11 +5,12 @@ import {
     faChevronDown,
 } from "@fortawesome/free-solid-svg-icons";
 import { Card, CardContent, Typography } from "@mui/material";
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 
 const TodoItem = (props) => {
     // 日程信息列表
     const [todoList, setTodoList] = useState(props.todoList);
+
     // 完成日程
     function handleComplete(id) {
         console.log(id + "这条日程要完成了，该发请求了");
@@ -45,7 +46,7 @@ const TodoItem = (props) => {
                         height: "4rem",
                         padding: "0 24px",
                         margin: "20px 0",
-                        userSelect: "none", 
+                        userSelect: "none",
                     }}
                 >
                     <FontAwesomeIcon
@@ -90,7 +91,7 @@ const TodoItem = (props) => {
                         height: "4rem",
                         padding: "0 24px",
                         margin: "20px 0",
-                        userSelect: "none", 
+                        userSelect: "none",
                     }}
                 >
                     <FontAwesomeIcon
@@ -112,6 +113,11 @@ const TodoItem = (props) => {
                 </Card>
             );
         });
+
+    // 传给父组件待完成日程总数
+    useEffect(() => {
+        props.onGetNum(todo.length);
+    });
 
     return (
         <Fragment>
