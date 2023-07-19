@@ -16,6 +16,7 @@ import {
     Link as MuiLink,
     DialogContentText,
 } from "@mui/material";
+import throttled from "../utils/throttled";
 
 const WelcomePage = (props) => {
     // 展示大图
@@ -23,11 +24,11 @@ const WelcomePage = (props) => {
     const [poem, setPoem] = useState("试试点击↑");
 
     // 随机诗词
-    function randomPoem() {
+    const randomPoem = throttled(() => {
         PoemLoader((result) => {
             setPoem(result.data.content);
         });
-    }
+    }, 1000);
 
     return (
         <Fragment>
