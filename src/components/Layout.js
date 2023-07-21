@@ -1,14 +1,14 @@
 import { Fragment } from "react";
+import { Outlet } from "react-router-dom";
 
 import Topbar from "./Topbar";
 import Navbar from "./Navbar/Navbar";
 import { Box, Paper } from "@mui/material";
 
 const Layout = (props) => {
-    const { children } = props;
-
     return (
         <Fragment>
+
             <Paper
                 sx={{
                     display: "grid",
@@ -21,7 +21,9 @@ const Layout = (props) => {
             >
                 <Topbar />
                 <Navbar />
-                <Box sx={{ padding: "1rem 2rem" }}>{children}</Box>
+                <Box sx={{ padding: "1rem 2rem" }}>
+                    <Outlet />
+                </Box>
             </Paper>
         </Fragment>
     );

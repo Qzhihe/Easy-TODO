@@ -1,29 +1,32 @@
+import { Fragment, useContext } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
 import {
     faCircleCheck,
     faCircleNotch,
     faChevronDown,
 } from "@fortawesome/free-solid-svg-icons";
+
 import { Card, CardContent, Typography } from "@mui/material";
-import { Fragment, useEffect, useState } from "react";
+
+import { StoreContext } from "../../store/store";
 
 const TodoItem = (props) => {
     // 日程信息列表
-    const [todoList, setTodoList] = useState(props.todoList);
+    const { store, setStore } = useContext(StoreContext);
+
+    const { todoList } = store;
 
     // 完成日程
     function handleComplete(id) {
         console.log(id + "这条日程要完成了，该发请求了");
-        setTodoList((prev) => {
-            const taskIndex = prev.findIndex((task) => task.id === id);
-            if (taskIndex !== -1) {
-                const updatedList = [...prev];
-                updatedList[taskIndex].state = "1";
-                return updatedList;
-            } else {
-                return;
-            }
-        });
+        const taskIndex = todoList.findIndex((task) => task.id === id);
+        if (taskIndex !== -1) {
+            const updatedList = [...todoList];
+            updatedList[taskIndex].state = "1";
+            
+            setStore((prev) => ({ ...prev, todoList: updatedList }));
+        }
     }
 
     const todo = todoList
@@ -113,11 +116,6 @@ const TodoItem = (props) => {
                 </Card>
             );
         });
-
-    // 传给父组件待完成日程总数
-    useEffect(() => {
-        props.onGetNum(todo.length);
-    });
 
     return (
         <Fragment>
