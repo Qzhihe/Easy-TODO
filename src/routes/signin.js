@@ -18,10 +18,10 @@ export default function SignInPage() {
     const checkForm = (data) => {
         let email = data.get("email"),
             password = data.get("password");
-        
+
         // 验证表单是否有空
         if (!email || !password) {
-            alert('不能为空！');
+            alert("不能为空！");
             return;
         }
 
@@ -41,7 +41,7 @@ export default function SignInPage() {
         // 准备发请求
         let userInfo = {
             email,
-            password
+            password,
         };
 
         console.log(userInfo);
@@ -64,8 +64,7 @@ export default function SignInPage() {
                     sm={4}
                     md={7}
                     sx={{
-                        backgroundImage:
-                            "url(./sunset.jpg)",
+                        backgroundImage: "url(./sunset.jpg)",
                         // 神奇API https://source.unsplash.com/random?wallpapers
                         backgroundRepeat: "no-repeat",
                         backgroundColor: (t) =>
@@ -94,8 +93,7 @@ export default function SignInPage() {
                             alignItems: "center",
                         }}
                     >
-                        <Avatar sx={{ m: 1, bgcolor: "orange" }}>
-                        </Avatar>
+                        <Avatar sx={{ m: 1, bgcolor: "orange" }}></Avatar>
                         <Typography component="h1" variant="h5">
                             登录
                         </Typography>
@@ -125,7 +123,7 @@ export default function SignInPage() {
                                 id="password"
                                 autoComplete="current-password"
                             />
-                            
+
                             <Button
                                 type="submit"
                                 fullWidth

@@ -18,7 +18,7 @@ export default function SignUpPage() {
     const checkForm = (data) => {
         let email = data.get('email'),
             password = data.get("psw"),
-            password1 = data.get('psw1');
+            password1 = data.get("psw1");
 
         // 验证表单是否有空项
         if (!email || !password || !password1) {
@@ -38,7 +38,7 @@ export default function SignUpPage() {
 
         // 验证两次密码是否相同
         if (password !== password1) {
-            alert('两次输入密码不同，请重新检查！');
+            alert("两次输入密码不同，请重新检查！");
             return;
         }
 
@@ -53,14 +53,18 @@ export default function SignUpPage() {
 
     // 点击“注册”提交表单
     const handleSubmit = (event) => {
-        event.preventDefault();      
+        event.preventDefault();
         const data = new FormData(event.currentTarget);
         checkForm(data);
     };
 
     return (
         <ThemeProvider theme={defaultTheme}>
-            <Container component="main" maxWidth="xs" sx={{ overflow: "hidden" }}>
+            <Container
+                component="main"
+                maxWidth="xs"
+                sx={{ overflow: "hidden" }}
+            >
                 <CssBaseline />
                 <Box
                     sx={{
@@ -70,8 +74,7 @@ export default function SignUpPage() {
                         alignItems: "center",
                     }}
                 >
-                    <Avatar sx={{ m: 1, bgcolor: "orange" }}>
-                    </Avatar>
+                    <Avatar sx={{ m: 1, bgcolor: "orange" }}></Avatar>
                     <Typography component="h1" variant="h5">
                         注册
                     </Typography>
