@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { Fragment, useState } from "react";
+import { Fragment, useContext, useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { Box, Card, Typography } from "@mui/material";
@@ -8,11 +8,18 @@ import { faSun, faMoon } from "@fortawesome/free-regular-svg-icons";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import TodoItem from "../components/TodoItem";
 import dtd from "../utils/dtd";
+import { StoreContext } from "../store/store";
 
 const TodayPage = (props) => {
-    const [inputValue, setInputValue] = useState("");
+    const { store, setStore } = useContext(StoreContext);
+    const { todoList } = store;
+
     const [nightTheme, setChangeTheme] = useState(false);
-    
+
+    useEffect(() => {
+        console.log(todoList);
+    });
+
     // 主题切换-目前还咩有实现，只是图标改变
     function changeTheme() {
         setChangeTheme(!nightTheme);
@@ -22,11 +29,29 @@ const TodayPage = (props) => {
     const today = dtd.formatDate();
     const dayOfWeek = dtd.day();
 
-    function handleInputEnter(ev) {
+    // add a new todoooooooooooo
+    function addTodo(todo) {
+        const updatedList = [todo, ...todoList];
+        console.log(updatedList);
+        setStore((prev) => ({ ...prev, todoList: updatedList }));
+    }
+
+    // enter methoddddddddddd
+    function handleInputEnter(ev) { 
         if (ev.key === "Enter") {
+            const title = ev.target.value;
+
+            let todo = {
+                id:'222',
+                title: title,
+                type: '1',
+                msg: '111',
+                state: '0',
+            };
+            addTodo(todo);
             // 发送请求，添加新日程
-            console.log(inputValue);
-            setInputValue("");
+            console.log(todo);
+            ev.target.value = '';
         }
     }
 
@@ -94,8 +119,7 @@ const TodayPage = (props) => {
                     style={{ color: "rgb(255, 128, 0)" }}
                 />
                 <Input
-                    value={inputValue}
-                    onChange={(ev) => setInputValue(ev.target.value)}
+                    name='title'
                     onKeyDown={handleInputEnter}
                     placeholder="添加任务"
                 />

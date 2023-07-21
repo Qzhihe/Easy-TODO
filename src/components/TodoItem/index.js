@@ -1,4 +1,4 @@
-import { Fragment, useContext } from "react";
+import { Fragment, memo, useContext, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import {
@@ -11,11 +11,15 @@ import { Card, CardContent, Typography } from "@mui/material";
 
 import { StoreContext } from "../../store/store";
 
-const TodoItem = (props) => {
+const TodoItem = memo((props) => {
     // 日程信息列表
     const { store, setStore } = useContext(StoreContext);
 
     const { todoList } = store;
+
+    useEffect(() => {
+        console.log('index.js变了');
+    });
 
     // 完成日程
     function handleComplete(id) {
@@ -24,7 +28,7 @@ const TodoItem = (props) => {
         if (taskIndex !== -1) {
             const updatedList = [...todoList];
             updatedList[taskIndex].state = "1";
-            
+
             setStore((prev) => ({ ...prev, todoList: updatedList }));
         }
     }
@@ -127,5 +131,5 @@ const TodoItem = (props) => {
             {done}
         </Fragment>
     );
-};
+});
 export default TodoItem;
