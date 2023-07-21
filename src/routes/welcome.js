@@ -108,7 +108,7 @@ const WelcomePage = (props) => {
                     }}
                 >
                     <Typography variant="h4">更轻 更简 更快</Typography>
-                    <Box sx={{ display: "flex", alignItems: 'baseline'}}>
+                    <Box sx={{ display: "flex", alignItems: "baseline" }}>
                         <Typography
                             variant="h2"
                             onClick={() => randomPoem()}
@@ -121,7 +121,7 @@ const WelcomePage = (props) => {
                             style={{
                                 color: "rgb(0,222,0)",
                                 width: ".6rem",
-                                margin: '.5rem',
+                                margin: ".5rem",
                             }}
                             beatFade
                         />
