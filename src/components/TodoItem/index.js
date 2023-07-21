@@ -121,11 +121,6 @@ const TodoItem = memo((props) => {
             );
         });
 
-    // 传给父组件待完成日程总数
-    useEffect(() => {
-        props.onGetNum(todo.length);
-    });
-
     return (
         <Fragment>
             <FontAwesomeIcon icon={faChevronDown} size="lg" />
