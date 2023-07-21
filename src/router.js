@@ -21,12 +21,14 @@ const router = createBrowserRouter([
         element: <SignUpPage />,
     },
     {
-        path: "/today",
-        element: (
-            <Layout>
-                <TodayPage />
-            </Layout>
-        ),
+        path: "/views",
+        element: <Layout />,
+        children: [
+            {
+                path: "today",
+                element: <TodayPage />,
+            },
+        ]
     },
 ]);
 
