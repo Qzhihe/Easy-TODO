@@ -8,7 +8,6 @@ import { Box, Paper } from "@mui/material";
 const Layout = (props) => {
     return (
         <Fragment>
-
             <Paper
                 sx={{
                     display: "grid",

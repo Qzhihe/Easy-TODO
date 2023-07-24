@@ -25,7 +25,7 @@ const Navbar = (props) => {
             <Toolbar
                 id="navbar"
                 disableGutters={true}
-                sx={{   
+                sx={{
                     display: "flex",
                     flexFlow: "column nowrap",
                     width: "18rem",

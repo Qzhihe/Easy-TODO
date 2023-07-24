@@ -16,23 +16,23 @@ const defaultTheme = createTheme();
 export default function SignUpPage() {
     // 验证注册表单内容
     const checkForm = (data) => {
-        let email = data.get('email'),
+        let email = data.get("email"),
             password = data.get("psw"),
             password1 = data.get("psw1");
 
         // 验证表单是否有空项
         if (!email || !password || !password1) {
-            alert('注册内容不能为空！');
+            alert("注册内容不能为空！");
             return;
         }
         // 验证邮箱合法性
         if (!validate.valiEmail(email)) {
-            alert('邮箱格式不对');
+            alert("邮箱格式不对");
             return;
         }
         // 验证密码合法性
         if (!validate.valiPwd(password)) {
-            alert('密码格式不对');
+            alert("密码格式不对");
             return;
         }
 
@@ -45,7 +45,7 @@ export default function SignUpPage() {
         // 发送添加请求
         let userInfo = {
             email, // 邮箱
-            password // 密码
+            password, // 密码
         };
 
         console.log(userInfo);

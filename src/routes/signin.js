@@ -38,12 +38,12 @@ export default function SignInPage() {
 
         // 验证邮箱合法性
         if (!validate.valiEmail(email)) {
-            alert('邮箱格式不对');
+            alert("邮箱格式不对");
             return;
         }
         // 验证密码合法性
         if (!validate.valiPwd(password)) {
-            alert('密码格式不对');
+            alert("密码格式不对");
             return;
         }
 
