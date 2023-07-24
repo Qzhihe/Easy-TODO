@@ -1,4 +1,4 @@
-import { Fragment, useEffect } from "react";
+import { Fragment, useEffect, Suspense } from "react";
 import GlobalStyle from "./GlobalStyle";
 import { RouterProvider } from "react-router-dom";
 
@@ -14,7 +14,10 @@ function App() {
         <Fragment>
             <StoreProvider>
                 <GlobalStyle />
-                <RouterProvider router={router} />
+                <Suspense>
+                    {/* 牛波一，那个页面加载中效果就是这么出来的 → fallback={<div>Loading...</div>} */}
+                    <RouterProvider router={router} />
+                </Suspense>
             </StoreProvider>
         </Fragment>
     );

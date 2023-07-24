@@ -37,21 +37,21 @@ const TodayPage = (props) => {
     }
 
     // enter methoddddddddddd
-    function handleInputEnter(ev) { 
+    function handleInputEnter(ev) {
         if (ev.key === "Enter") {
             const title = ev.target.value;
 
             let todo = {
-                id:'222',
+                id: "222",
                 title: title,
-                type: '1',
-                msg: '111',
-                state: '0',
+                type: "1",
+                msg: "111",
+                state: "0",
             };
             addTodo(todo);
             // 发送请求，添加新日程
             console.log(todo);
-            ev.target.value = '';
+            ev.target.value = "";
         }
     }
 
@@ -119,7 +119,7 @@ const TodayPage = (props) => {
                     style={{ color: "rgb(255, 128, 0)" }}
                 />
                 <Input
-                    name='title'
+                    name="title"
                     onKeyDown={handleInputEnter}
                     placeholder="添加任务"
                 />

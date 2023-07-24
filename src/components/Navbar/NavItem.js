@@ -12,11 +12,10 @@ import { StoreContext } from "../../store/store";
 
 const NavItem = (props) => {
     const { id, icon, title, isActive, onClick } = props;
-    const { store, setStore } = useContext(StoreContext);
+    const { store } = useContext(StoreContext);
     const { todoList } = store;
 
-    const len = todoList.filter(item => item.state === '0').length;
-
+    const len = todoList.filter((item) => item.state === "0").length;
 
     function innerClickHandler(id) {
         onClick(id);

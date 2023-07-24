@@ -18,7 +18,7 @@ const TodoItem = memo((props) => {
     const { todoList } = store;
 
     useEffect(() => {
-        console.log('index.js变了');
+        console.log("index.js变了");
     });
 
     // 完成日程
