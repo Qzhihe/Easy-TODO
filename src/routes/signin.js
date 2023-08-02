@@ -1,23 +1,23 @@
-import * as React from "react";
-import Avatar from "@mui/material/Avatar";
-import Button from "@mui/material/Button";
-import CssBaseline from "@mui/material/CssBaseline";
-import TextField from "@mui/material/TextField";
-import Link from "@mui/material/Link";
-import Paper from "@mui/material/Paper";
-import Box from "@mui/material/Box";
-import Grid from "@mui/material/Grid";
-import Typography from "@mui/material/Typography";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import validate from "../utils/validate";
+
+import {
+    Box,
+    Link,
+    Grid,
+    Paper,
+    Avatar,
+    Button,
+    TextField,
+    Typography,
+    CssBaseline,
+} from "@mui/material";
 
 const defaultTheme = createTheme();
 
-export default function SignInPage() {
-    // 验证登录表单
-    const checkForm = (data) => {
-        let email = data.get("email"),
-            password = data.get("password");
+const SignInPage = () => {
+    const navigate = useNavigate();
 
         // 验证表单是否有空
         if (!email || !password) {
@@ -61,9 +61,29 @@ export default function SignInPage() {
     // 点击“登录”提交表单
     const handleSubmit = (event) => {
         event.preventDefault();
+
         const data = new FormData(event.currentTarget);
-        checkForm(data);
-    };
+
+        try {
+            const result = await axios({
+                url: `${process.env.REACT_APP_API_URL}/user/login`,
+                method: "post",
+                data: {
+                    username: data.get("email"),
+                    password: data.get("password"),
+                },
+            });
+
+            console.log(result);
+
+            if (result.data.code === 20000) {
+                localStorage.setItem("authToken", result.data.data.token);
+                navigate("/views/today", { replace: true });
+            }
+        } catch (err) {
+            console.error(err);
+        }
+    }
 
     return (
         <ThemeProvider theme={defaultTheme}>
@@ -119,7 +139,7 @@ export default function SignInPage() {
                                 required
                                 fullWidth
                                 id="email"
-                                label="邮箱地址"
+                                label="用户名"
                                 name="email"
                                 autoComplete="email"
                                 autoFocus
@@ -161,4 +181,6 @@ export default function SignInPage() {
             </Grid>
         </ThemeProvider>
     );
-}
+};
+
+export default SignInPage;

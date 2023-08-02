@@ -1,8 +1,10 @@
 import { Fragment, useState } from "react";
 import { load as PoemLoader } from "jinrishici";
 import { Link as RouteLink } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { faCircle } from "@fortawesome/free-solid-svg-icons";
+
 import {
     Box,
     Paper,
@@ -10,24 +12,22 @@ import {
     AppBar,
     Dialog,
     Divider,
+    Snackbar,
     Typography,
     DialogTitle,
     DialogActions,
     DialogContent,
     Link as MuiLink,
     DialogContentText,
-    Snackbar,
 } from "@mui/material";
+
 import throttled from "../utils/throttled";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const WelcomePage = (props) => {
-    // 展示大图
     const [open, setOpen] = useState(false);
-    // 诗词
     const [poem, setPoem] = useState("试试点击↑");
-    // 提示信息
     const [snackbarOpen, setSnackbarOpen] = useState(false);
+    
     const randomPoem = throttled(
         () => {
             PoemLoader((result) => {
