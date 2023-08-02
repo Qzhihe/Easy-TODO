@@ -1,14 +1,21 @@
-import { Fragment } from "react";
-import router from "./router";
+import { Fragment, useEffect } from "react";
 import GlobalStyle from "./GlobalStyle";
 import { RouterProvider } from "react-router-dom";
 
+import router from "./router";
+
+import StoreProvider from "./store/store";
 
 function App() {
+    useEffect(() => {
+        console.log("!!!!!!");
+    });
     return (
         <Fragment>
-            <GlobalStyle />
-            <RouterProvider router={router} />
+            <StoreProvider>
+                <GlobalStyle />
+                <RouterProvider router={router} />
+            </StoreProvider>
         </Fragment>
     );
 }

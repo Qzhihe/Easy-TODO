@@ -2,6 +2,7 @@ import { Fragment, useState } from "react";
 import { load as PoemLoader } from "jinrishici";
 import { Link as RouteLink } from "react-router-dom";
 
+import { faCircle } from "@fortawesome/free-solid-svg-icons";
 import {
     Box,
     Paper,
@@ -15,22 +16,39 @@ import {
     DialogContent,
     Link as MuiLink,
     DialogContentText,
+    Snackbar,
 } from "@mui/material";
+import throttled from "../utils/throttled";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const WelcomePage = (props) => {
     // 展示大图
     const [open, setOpen] = useState(false);
+    // 诗词
     const [poem, setPoem] = useState("试试点击↑");
-
-    // 随机诗词
-    function randomPoem() {
-        PoemLoader((result) => {
-            setPoem(result.data.content);
-        });
-    }
+    // 提示信息
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
+    const randomPoem = throttled(
+        () => {
+            PoemLoader((result) => {
+                setPoem(result.data.content);
+            });
+        },
+        1000,
+        snackbarOpen,
+        setSnackbarOpen
+    );
 
     return (
         <Fragment>
+            <Snackbar
+                open={snackbarOpen}
+                autoHideDuration={1000}
+                message="点击过快！"
+                onClose={() => setSnackbarOpen(false)}
+                anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+            ></Snackbar>
+
             <Paper
                 sx={{
                     display: "flex",
@@ -90,13 +108,24 @@ const WelcomePage = (props) => {
                     }}
                 >
                     <Typography variant="h4">更轻 更简 更快</Typography>
-                    <Typography
-                        variant="h2"
-                        onClick={() => randomPoem()}
-                        sx={{ userSelect: "none", cursor: "pointer" }}
-                    >
-                        Easy TODO
-                    </Typography>
+                    <Box sx={{ display: "flex", alignItems: "baseline" }}>
+                        <Typography
+                            variant="h2"
+                            onClick={() => randomPoem()}
+                            sx={{ userSelect: "none", cursor: "pointer" }}
+                        >
+                            Easy TODO
+                        </Typography>
+                        <FontAwesomeIcon
+                            icon={faCircle}
+                            style={{
+                                color: "rgb(0,222,0)",
+                                width: ".6rem",
+                                margin: ".5rem",
+                            }}
+                            beatFade
+                        />
+                    </Box>
                     <Typography>{poem}</Typography>
                 </Box>
 

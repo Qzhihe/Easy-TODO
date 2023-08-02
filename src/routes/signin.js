@@ -9,6 +9,7 @@ import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
+import validate from "../utils/validate";
 
 const defaultTheme = createTheme();
 
@@ -21,6 +22,17 @@ export default function SignInPage() {
         // 验证表单是否有空
         if (!email || !password) {
             alert("不能为空！");
+            return;
+        }
+
+        // 验证邮箱合法性
+        if (!validate.valiEmail(email)) {
+            alert('邮箱格式不对');
+            return;
+        }
+        // 验证密码合法性
+        if (!validate.valiPwd(password)) {
+            alert('密码格式不对');
             return;
         }
 
