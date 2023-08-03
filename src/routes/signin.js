@@ -19,47 +19,7 @@ const defaultTheme = createTheme();
 const SignInPage = () => {
     const navigate = useNavigate();
 
-        // 验证表单是否有空
-        if (!email || !password) {
-            alert("不能为空！");
-            return;
-        }
-
-        // 验证邮箱合法性
-        if (!validate.valiEmail(email)) {
-            alert('邮箱格式不对');
-            return;
-        }
-        // 验证密码合法性
-        if (!validate.valiPwd(password)) {
-            alert('密码格式不对');
-            return;
-        }
-
-        // 验证邮箱合法性
-        if (!validate.valiEmail(email)) {
-            alert("邮箱格式不对");
-            return;
-        }
-        // 验证密码合法性
-        if (!validate.valiPwd(password)) {
-            alert("密码格式不对");
-            return;
-        }
-
-        console.log(email, password);
-
-        // 准备发请求
-        let userInfo = {
-            email,
-            password,
-        };
-
-        console.log(userInfo);
-    };
-
-    // 点击“登录”提交表单
-    const handleSubmit = (event) => {
+    async function handleSubmit(event) {
         event.preventDefault();
 
         const data = new FormData(event.currentTarget);
