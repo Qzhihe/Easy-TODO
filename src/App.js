@@ -9,7 +9,7 @@ import Layout from "./components/Layout";
 import SignInPage from "./routes/signin";
 import SignUpPage from "./routes/signup";
 import WelcomePage from "./routes/welcome";
-import NotFound from "./routes/404";
+import NotFound from "./routes/404/404";
 
 function isValidToken() {
     const token = localStorage.getItem("authToken");
