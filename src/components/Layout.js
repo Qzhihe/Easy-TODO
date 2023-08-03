@@ -2,13 +2,12 @@ import { Fragment } from "react";
 import { Outlet } from "react-router-dom";
 
 import Topbar from "./Topbar";
-import Navbar from "./Navbar/Navbar";
+import Navbar from "./Navbar";
 import { Box, Paper } from "@mui/material";
 
 const Layout = (props) => {
     return (
         <Fragment>
-
             <Paper
                 sx={{
                     display: "grid",

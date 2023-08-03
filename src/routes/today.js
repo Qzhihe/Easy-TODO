@@ -2,56 +2,100 @@ import styled from "styled-components";
 import { Fragment, useContext, useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import { Box, Card, Typography } from "@mui/material";
+import {
+    Box,
+    Menu,
+    Card,
+    Divider,
+    Typography,
+    IconButton,
+    Tooltip,
+} from "@mui/material";
+
+import {
+    faPlus,
+    faFlag,
+    faCalendarDays,
+} from "@fortawesome/free-solid-svg-icons";
 
 import { faSun, faMoon } from "@fortawesome/free-regular-svg-icons";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
-import TodoItem from "../components/TodoItem";
+
 import dtd from "../utils/dtd";
 import { StoreContext } from "../store/store";
+import TodoList from "../components/TodoList";
+import { sendRequest } from "../utils/request";
+
+function getTooltipTitle(priority) {
+    switch (priority) {
+        case "high":
+            return "高优先级";
+        case "medium":
+            return "中优先级";
+        case "low":
+            return "低优先级";
+        default:
+            return "无优先级";
+    }
+}
 
 const TodayPage = (props) => {
     const { store, setStore } = useContext(StoreContext);
+
+    const [nextTodo, setNextTodo] = useState({
+        title: null,
+        priority: "none",
+    });
+    const [nightTheme, setChangeTheme] = useState(false);
+    const [priorityMenuAnchor, setPriorityMenuAnchor] = useState(null);
+
     const { todoList } = store;
 
-    const [nightTheme, setChangeTheme] = useState(false);
+    const dayOfWeek = dtd.day();
+    const today = dtd.formatDate();
+    let themeIcon = nightTheme ? faMoon : faSun;
 
     useEffect(() => {
-        console.log(todoList);
-    });
+        // (async () => {
+        //     try {
+        //         const res = await sendRequest({
+        //             url: "/schedule/all",
+        //             method: "get",
+        //         });
+        //         console.log(res);
+        //     } catch (err) {
+        //         console.error(err);
+        //     }
+        // })();
+    }, []);
 
-    // 主题切换-目前还咩有实现，只是图标改变
+    // TODO: 主题更换
     function changeTheme() {
         setChangeTheme(!nightTheme);
     }
-    let themeIcon = nightTheme ? faMoon : faSun;
 
-    const today = dtd.formatDate();
-    const dayOfWeek = dtd.day();
-
-    // add a new todoooooooooooo
     function addTodo(todo) {
         const updatedList = [todo, ...todoList];
-        console.log(updatedList);
         setStore((prev) => ({ ...prev, todoList: updatedList }));
     }
 
-    // enter methoddddddddddd
-    function handleInputEnter(ev) { 
-        if (ev.key === "Enter") {
-            const title = ev.target.value;
+    function handlePriorityChange(ev) {
+        const priority = ev.target.getAttribute("data-priority");
 
-            let todo = {
-                id:'222',
-                title: title,
-                type: '1',
-                msg: '111',
-                state: '0',
-            };
-            addTodo(todo);
-            // 发送请求，添加新日程
-            console.log(todo);
-            ev.target.value = '';
+        setNextTodo({ ...nextTodo, priority });
+    }
+
+    function handleFormEnter(ev) {
+        if (ev.key === "Enter") {
+            let title = ev.target.value;
+
+            setNextTodo({
+                title,
+                type: "任务",
+            });
+
+            addTodo(nextTodo);
+
+            title = "";
         }
     }
 
@@ -100,38 +144,170 @@ const TodayPage = (props) => {
                         userSelect: "none",
                     }}
                 >
-                    {today}&nbsp;&nbsp;{dayOfWeek}
+                    {today}
+                    {dayOfWeek}
                 </Typography>
             </Card>
 
             <Card
                 sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    height: "3.5rem",
+                    mt: "20px",
                     padding: "0 24px",
-                    margin: "20px 0",
                 }}
             >
-                <FontAwesomeIcon
-                    icon={faPlus}
-                    size="lg"
-                    style={{ color: "rgb(255, 128, 0)" }}
-                />
-                <Input
-                    name='title'
-                    onKeyDown={handleInputEnter}
-                    placeholder="添加任务"
-                />
+                <Box
+                    sx={{
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        height: "3.5rem",
+                    }}
+                >
+                    <FontAwesomeIcon
+                        icon={faPlus}
+                        size="lg"
+                        style={{ color: "rgb(255, 128, 0)" }}
+                    />
+                    <Input
+                        name="title"
+                        onKeyDown={handleFormEnter}
+                        placeholder="添加任务"
+                    />
+                </Box>
+                <Divider />
+                <Box
+                    sx={{
+                        display: "flex",
+                        justifyContent: "flex-start",
+                        alignItems: "center",
+                    }}
+                >
+                    <Tooltip title={getTooltipTitle(nextTodo.priority)}>
+                        <IconButton
+                            onClick={(ev) => setPriorityMenuAnchor(ev.target)}
+                        >
+                            <FontAwesomeIcon
+                                className={`priority-${nextTodo.priority}`}
+                                icon={faFlag}
+                                size="2xs"
+                            />
+                        </IconButton>
+                    </Tooltip>
+                    <IconButton>
+                        <FontAwesomeIcon icon={faCalendarDays} size="2xs" />
+                    </IconButton>
+                </Box>
             </Card>
-            <Box>
-                <TodoItem />
-            </Box>
+
+            <TodoList />
+
+            <Menu
+                anchorEl={priorityMenuAnchor}
+                open={!!priorityMenuAnchor}
+                onClick={() => setPriorityMenuAnchor(null)}
+                onClose={() => setPriorityMenuAnchor(null)}
+                MenuListProps={{
+                    disablePadding: true,
+                    sx: {
+                        minWidth: "10rem",
+                        padding: "16px",
+                    },
+                }}
+            >
+                <Box component="li">
+                    <Typography
+                        paragraph
+                        sx={{
+                            fontSize: "0.8rem",
+                            color: "rgba(0, 0, 0, 0.3)",
+                        }}
+                    >
+                        优先级
+                    </Typography>
+                    <Box
+                        component="ul"
+                        onClick={handlePriorityChange}
+                        sx={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                        }}
+                    >
+                        <PriorityRadio
+                            priority="high"
+                            active={nextTodo.priority === "high"}
+                        />
+                        <PriorityRadio
+                            priority="medium"
+                            active={nextTodo.priority === "medium"}
+                        />
+                        <PriorityRadio
+                            priority="low"
+                            active={nextTodo.priority === "low"}
+                        />
+                        <PriorityRadio
+                            priority="none"
+                            active={nextTodo.priority === "none"}
+                        />
+                    </Box>
+                </Box>
+            </Menu>
         </Fragment>
     );
 };
 
 export default TodayPage;
+
+const PriorityRadio = ({ priority, active }) => {
+    const styles = {};
+
+    if (active) {
+        styles.backgroundColor = "#ecf1ff";
+    }
+
+    return (
+        <Fragment>
+            <Tooltip title={getTooltipTitle(priority)} arrow>
+                <Box
+                    component="li"
+                    data-priority={priority}
+                    sx={{
+                        position: "relative",
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        width: "1.5rem",
+                        minHeight: "1.5rem",
+                        textAlign: "center",
+                        fontSize: "1rem",
+                        borderRadius: "4px",
+                        cursor: "pointer",
+                        ...styles,
+
+                        "&:hover::before": {
+                            content: `""`,
+                            position: "absolute",
+                            top: "50%",
+                            left: "50%",
+                            display: "block",
+                            width: "130%",
+                            height: "130%",
+                            borderRadius: "4px",
+                            transform: "translate(-50%, -50%)",
+                            backgroundColor: "rgba(215, 215, 215, 0.3)",
+                            pointerEvents: "none",
+                        },
+                    }}
+                >
+                    <FontAwesomeIcon
+                        icon={faFlag}
+                        className={`priority-${priority}`}
+                        style={{ position: "absolute", pointerEvents: "none" }}
+                    />
+                </Box>
+            </Tooltip>
+        </Fragment>
+    );
+};
 
 const Input = styled.input`
     width: 100%;
@@ -142,6 +318,7 @@ const Input = styled.input`
     outline: none;
 
     font-size: 1rem;
+    line-height: 1.5rem;
 
     ::placeholder {
         color: rgb(255, 128, 0);
