@@ -1,3 +1,4 @@
+import "dayjs/locale/zh-cn";
 import { Fragment } from "react";
 import GlobalStyle from "./GlobalStyle";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";

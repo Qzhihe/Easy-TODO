@@ -1,6 +1,9 @@
+import dayjs from "dayjs";
 import styled from "styled-components";
-import { Fragment, useContext, useEffect, useState } from "react";
+import calendar from "dayjs/plugin/calendar";
+import localizedFormat from "dayjs/plugin/localizedFormat";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Fragment, useContext, useEffect, useState } from "react";
 
 import {
     Box,
@@ -12,6 +15,10 @@ import {
     Tooltip,
 } from "@mui/material";
 
+import { DateCalendar } from "@mui/x-date-pickers/DateCalendar";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+
 import {
     faPlus,
     faFlag,
@@ -20,12 +27,32 @@ import {
 
 import { faSun, faMoon } from "@fortawesome/free-regular-svg-icons";
 
-import dtd from "../utils/dtd";
 import { StoreContext } from "../store/store";
 import TodoList from "../components/TodoList";
 import { sendRequest } from "../utils/request";
 
-function getTooltipTitle(priority) {
+dayjs.extend(localizedFormat);
+
+function getDateTooltipTitle(date) {
+    if (!date) {
+        return null;
+    }
+
+    const delta = Math.ceil(date.diff(dayjs(), "day", true));
+
+    switch (delta) {
+        case 0:
+            return "今天";
+        case 1:
+            return "明天";
+        case 2:
+            return "后天";
+        default:
+            return `${date.get("month")} 月 ${date.get("date")} 日`;
+    }
+}
+
+function getPriorityTooltipTitle(priority) {
     switch (priority) {
         case "high":
             return "高优先级";
@@ -33,8 +60,10 @@ function getTooltipTitle(priority) {
             return "中优先级";
         case "low":
             return "低优先级";
-        default:
+        case "none":
             return "无优先级";
+        default:
+            return null;
     }
 }
 
@@ -42,16 +71,16 @@ const TodayPage = (props) => {
     const { store, setStore } = useContext(StoreContext);
 
     const [nextTodo, setNextTodo] = useState({
+        date: null,
         title: null,
-        priority: "none",
+        alarm: null,
+        priority: null,
     });
     const [nightTheme, setChangeTheme] = useState(false);
+    const [dateMenuAnchor, setDateMenuAnchor] = useState(null);
     const [priorityMenuAnchor, setPriorityMenuAnchor] = useState(null);
 
     const { todoList } = store;
-
-    const dayOfWeek = dtd.day();
-    const today = dtd.formatDate();
     let themeIcon = nightTheme ? faMoon : faSun;
 
     useEffect(() => {
@@ -78,9 +107,15 @@ const TodayPage = (props) => {
         setStore((prev) => ({ ...prev, todoList: updatedList }));
     }
 
+    function handleCalendarChange(date, state) {
+        if (state === "finish") {
+            setDateMenuAnchor(null);
+        }
+        setNextTodo({ ...nextTodo, date });
+    }
+
     function handlePriorityChange(ev) {
         const priority = ev.target.getAttribute("data-priority");
-
         setNextTodo({ ...nextTodo, priority });
     }
 
@@ -144,8 +179,7 @@ const TodayPage = (props) => {
                         userSelect: "none",
                     }}
                 >
-                    {today}
-                    {dayOfWeek}
+                    {dayjs().locale("zh-cn").format("YYYY 年 M 月 D 日 dddd")}
                 </Typography>
             </Card>
 
@@ -163,11 +197,13 @@ const TodayPage = (props) => {
                         height: "3.5rem",
                     }}
                 >
-                    <FontAwesomeIcon
-                        icon={faPlus}
-                        size="lg"
-                        style={{ color: "rgb(255, 128, 0)" }}
-                    />
+                    <Box>
+                        <FontAwesomeIcon
+                            icon={faPlus}
+                            size="lg"
+                            style={{ color: "rgb(255, 128, 0)" }}
+                        />
+                    </Box>
                     <Input
                         name="title"
                         onKeyDown={handleFormEnter}
@@ -182,20 +218,56 @@ const TodayPage = (props) => {
                         alignItems: "center",
                     }}
                 >
-                    <Tooltip title={getTooltipTitle(nextTodo.priority)}>
-                        <IconButton
-                            onClick={(ev) => setPriorityMenuAnchor(ev.target)}
-                        >
-                            <FontAwesomeIcon
-                                className={`priority-${nextTodo.priority}`}
-                                icon={faFlag}
-                                size="2xs"
-                            />
-                        </IconButton>
-                    </Tooltip>
-                    <IconButton>
-                        <FontAwesomeIcon icon={faCalendarDays} size="2xs" />
-                    </IconButton>
+                    <Box
+                        component="ul"
+                        sx={{ display: "flex", gap: "0 0.75rem" }}
+                    >
+                        <Box component="li" sx={{ display: "block" }}>
+                            <Tooltip
+                                title={
+                                    getPriorityTooltipTitle(
+                                        nextTodo.priority
+                                    ) ?? "设置优先级"
+                                }
+                            >
+                                <IconButton
+                                    onClick={(ev) =>
+                                        setPriorityMenuAnchor(ev.target)
+                                    }
+                                >
+                                    <FontAwesomeIcon
+                                        className={`priority-${nextTodo.priority}`}
+                                        icon={faFlag}
+                                        size="2xs"
+                                    />
+                                </IconButton>
+                            </Tooltip>
+                        </Box>
+                        <Box component="li" sx={{ display: "block" }}>
+                            <Tooltip
+                                title={
+                                    getDateTooltipTitle(nextTodo.date) ??
+                                    "设置时间"
+                                }
+                            >
+                                <IconButton
+                                    onClick={(ev) =>
+                                        setDateMenuAnchor(ev.target)
+                                    }
+                                >
+                                    <FontAwesomeIcon
+                                        size="2xs"
+                                        icon={faCalendarDays}
+                                        color={
+                                            nextTodo.date
+                                                ? "rgb(255, 128, 0)"
+                                                : ""
+                                        }
+                                    />
+                                </IconButton>
+                            </Tooltip>
+                        </Box>
+                    </Box>
                 </Box>
             </Card>
 
@@ -209,8 +281,7 @@ const TodayPage = (props) => {
                 MenuListProps={{
                     disablePadding: true,
                     sx: {
-                        minWidth: "10rem",
-                        padding: "16px",
+                        padding: "1rem",
                     },
                 }}
             >
@@ -229,7 +300,7 @@ const TodayPage = (props) => {
                         onClick={handlePriorityChange}
                         sx={{
                             display: "flex",
-                            justifyContent: "space-between",
+                            gap: "0 0.75rem",
                         }}
                     >
                         <PriorityRadio
@@ -251,6 +322,29 @@ const TodayPage = (props) => {
                     </Box>
                 </Box>
             </Menu>
+
+            <Menu
+                anchorEl={dateMenuAnchor}
+                open={!!dateMenuAnchor}
+                onClose={() => setDateMenuAnchor(null)}
+                MenuListProps={{
+                    disablePadding: true,
+                    sx: {
+                        padding: "1rem",
+                    },
+                }}
+            >
+                <LocalizationProvider
+                    dateAdapter={AdapterDayjs}
+                    adapterLocale="zh-cn"
+                >
+                    <DateCalendar
+                        disablePast
+                        value={nextTodo.date}
+                        onChange={handleCalendarChange}
+                    />
+                </LocalizationProvider>
+            </Menu>
         </Fragment>
     );
 };
@@ -266,7 +360,7 @@ const PriorityRadio = ({ priority, active }) => {
 
     return (
         <Fragment>
-            <Tooltip title={getTooltipTitle(priority)} arrow>
+            <Tooltip title={getPriorityTooltipTitle(priority)} arrow>
                 <Box
                     component="li"
                     data-priority={priority}
