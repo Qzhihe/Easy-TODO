@@ -10,7 +10,7 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import validate from "../utils/validate";
-import { SnackbarProvider   } from 'notistack';
+import { SnackbarProvider } from 'notistack';
 
 const defaultTheme = createTheme();
 
