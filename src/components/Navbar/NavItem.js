@@ -8,14 +8,16 @@ import {
     ListItemButton,
     ListItem as MUIListItem,
 } from "@mui/material";
+
 import { StoreContext } from "../../store/store";
 
 const NavItem = (props) => {
     const { id, icon, title, isActive, onClick } = props;
+    
     const { store } = useContext(StoreContext);
-    const { todoList } = store;
 
-    const len = todoList.filter((item) => item.state === "0").length;
+    const { todoList } = store;
+    const len = todoList.filter((item) => !item.isDone).length;
 
     function innerClickHandler(id) {
         onClick(id);

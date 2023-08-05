@@ -1,20 +1,8 @@
 import { useState, createContext } from "react";
 
 const initialStore = {
-    todoList: [
-        {
-            id: "1",
-            title: "回顾八股",
-            type: "任务",
-            isDone: false,
-        },
-        {
-            id: "2",
-            title: "睡午觉",
-            type: "任务",
-            isDone: true,
-        },
-    ],
+    activeNav: 0,
+    todoList: [],
 };
 
 const StoreContext = createContext(null);
