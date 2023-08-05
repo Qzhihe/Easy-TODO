@@ -72,9 +72,9 @@ const NotFound = () => {
                             "apparition 0.8s 1.2s cubic-bezier(0.39, 0.575, 0.28, 0.995) forwards",
                     }}
                 >
-                    <Message>Damnit stranger😥</Message>
+                    <Message>😥该网页不存在，</Message>
                     <Message>
-                        You got lost in the <strong>404</strong> galaxy.
+                        您已经迷失在 <strong>404</strong> 星系…
                     </Message>
                     <Message>
                         <Button
@@ -91,7 +91,7 @@ const NotFound = () => {
                                 fontWeight: "bold",
                             }}
                         >
-                            Go back to earth🌏
+                            返回地球🌏
                         </Button>
                     </Message>
                 </Box>
