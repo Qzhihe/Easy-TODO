@@ -5,15 +5,15 @@ import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 
 import StoreProvider from "./store/store";
 
-import TodayPage from "./routes/today";
 import Layout from "./components/Layout";
 import SignInPage from "./routes/signin";
 import SignUpPage from "./routes/signup";
 import WelcomePage from "./routes/welcome";
 import NotFound from "./routes/404/404";
+import TodayPage from "./routes/today";
 
 function isValidToken() {
-    const token = localStorage.getItem("authToken");
+    // const token = localStorage.getItem("authToken");
 
     // if (!token) {
     //     return false;

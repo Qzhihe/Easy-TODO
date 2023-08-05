@@ -1,47 +1,75 @@
-import { Fragment } from "react";
+import { Fragment, useRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import {
-    faCircleCheck,
+    // faCircleCheck,
+    // faChevronDown,
     faCircleNotch,
-    faChevronDown,
 } from "@fortawesome/free-solid-svg-icons";
 
-import { Box, Card, Typography } from "@mui/material";
+import { Box, Card, List, Typography } from "@mui/material";
 
-const TodoItem = (props) => {
-    const { data } = props;
+import { getCalendarDate } from "../../utils/date";
+import { getPriorityProp } from "../../utils/priority";
 
-    const { title, type, isDone } = data;
+const TodoItem = ({ data }) => {
+    const todoProps = useRef(["date", "alarm", "priority", "category"]);
+
+    const todo = data;
 
     return (
         <Fragment>
             <Card
+                component="li"
                 sx={{
-                    display: "flex",
-                    alignItems: "center",
                     height: "4rem",
                     padding: "0 24px",
-                    margin: "20px 0",
                     userSelect: "none",
                     cursor: "pointer",
                 }}
             >
-                <FontAwesomeIcon
-                    icon={faCircleNotch}
-                    size="lg"
-                    style={{
-                        color: "rgb(255, 128, 0)",
+                <Box
+                    sx={{
+                        display: "flex",
+                        gap: "0 1rem",
+                        height: "100%",
+                        alignItems: "center",
                     }}
-                    onClick={() => {}}
-                />
-                <Box sx={{ ml: "12px" }}>
-                    <Typography>{title}</Typography>
-                    <Typography
-                        sx={{ fontSize: "12px", color: "rgba(0, 0, 0, .6)" }}
-                    >
-                        {type}
-                    </Typography>
+                >
+                    <Box>
+                        <FontAwesomeIcon
+                            size="lg"
+                            icon={faCircleNotch}
+                            style={{
+                                color: "rgb(255, 128, 0)",
+                            }}
+                            onClick={() => {}}
+                        />
+                    </Box>
+
+                    <Box>
+                        <Typography>{todo.title}</Typography>
+                        <List
+                            disablePadding
+                            sx={{ display: "flex", gap: "0 0.5rem" }}
+                        >
+                            {todoProps.current.map((prop, idx) => {
+                                return (
+                                    todo[prop] && (
+                                        <Box
+                                            key={idx}
+                                            component="li"
+                                            sx={{ listStyle: "none" }}
+                                        >
+                                            <TodoItemProp
+                                                data={{ prop, val: todo[prop] }}
+                                            />
+                                        </Box>
+                                    )
+                                );
+                            })}
+                        </List>
+                    </Box>
                 </Box>
             </Card>
         </Fragment>
@@ -49,3 +77,32 @@ const TodoItem = (props) => {
 };
 
 export default TodoItem;
+
+const TodoItemProp = ({ data }) => {
+    const {prop, val} = data;
+
+    let styles = {},
+        children = null;
+
+    switch (prop) {
+        case "priority":
+            children = getPriorityProp(val, "title");
+            styles.color = getPriorityProp(val, "color");
+            break;
+        case "date":
+            children = getCalendarDate(val);
+            break;
+        case "alarm":
+            break;
+        case "category":
+            break;
+        default:
+            break;
+    }
+
+    return (
+        <Typography fontSize="0.75rem" {...styles} sx={{ opacity: 0.8 }}>
+            {children}
+        </Typography>
+    );
+};
