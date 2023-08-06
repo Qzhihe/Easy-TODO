@@ -3,7 +3,7 @@ import { Outlet } from "react-router-dom";
 
 import Topbar from "./Topbar";
 import Navbar from "./Navbar";
-import { Box, Paper } from "@mui/material";
+import { Paper } from "@mui/material";
 
 const Layout = (props) => {
     return (
@@ -20,9 +20,8 @@ const Layout = (props) => {
             >
                 <Topbar />
                 <Navbar />
-                <Box sx={{ padding: "1rem 2rem" }}>
-                    <Outlet />
-                </Box>
+
+                <Outlet />
             </Paper>
         </Fragment>
     );

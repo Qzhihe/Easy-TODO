@@ -1,0 +1,42 @@
+.todo_item {
+    display: flex;
+    align-items: center;
+    gap: 0 1rem;
+
+    height: 4rem;
+
+    padding: 0 1.25rem;
+
+    user-select: none;
+    cursor: pointer;
+}
+.todo_item_props {
+    display: flex;
+    gap: 0 0.5rem;
+
+    list-style: none;
+}
+.todo_item_prop {
+    font-size: 0.75rem;
+    opacity: 0.8;
+}
+.priority {
+    padding: 0 0.25rem;
+    border-radius: 0.5rem;
+}
+.priority-3 {
+    color: rgb(224, 49, 48);
+    background-color: rgba(224, 49, 48, 0.2);
+}
+.priority-2 {
+    color: rgb(255, 176, 0);
+    background-color: rgba(255, 176, 0, 0.2);
+}
+.priority-1 {
+    color: rgb(71, 114, 249);
+    background-color: rgba(71, 114, 249, 0.2);
+}
+.priority-0 {
+    color: rgb(162, 162, 162);
+    background-color: rgba(162, 162, 162, 0.2);
+}
