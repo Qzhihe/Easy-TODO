@@ -7,70 +7,47 @@ import {
     faCircleNotch,
 } from "@fortawesome/free-solid-svg-icons";
 
-import { Box, Card, List, Typography } from "@mui/material";
+import { Card } from "@mui/material";
 
 import { getCalendarDate } from "../../utils/date";
 import { getPriorityProp } from "../../utils/priority";
 
+import "./index.css";
+
 const TodoItem = ({ data }) => {
-    const todoProps = useRef(["date", "alarm", "priority", "category"]);
+    const todoProps = useRef(["priority", "date", "alarm", "category"]);
 
     const todo = data;
 
     return (
         <Fragment>
-            <Card
-                component="li"
-                sx={{
-                    height: "4rem",
-                    padding: "0 24px",
-                    userSelect: "none",
-                    cursor: "pointer",
-                }}
-            >
-                <Box
-                    sx={{
-                        display: "flex",
-                        gap: "0 1rem",
-                        height: "100%",
-                        alignItems: "center",
-                    }}
-                >
-                    <Box>
-                        <FontAwesomeIcon
-                            size="lg"
-                            icon={faCircleNotch}
-                            style={{
-                                color: "rgb(255, 128, 0)",
-                            }}
-                            onClick={() => {}}
-                        />
-                    </Box>
+            <Card component="li" className="todo_item">
+                <FontAwesomeIcon
+                    size="lg"
+                    icon={faCircleNotch}
+                    color="rgb(255, 128, 0)"
+                    onClick={() => {}}
+                />
 
-                    <Box>
-                        <Typography>{todo.title}</Typography>
-                        <List
-                            disablePadding
-                            sx={{ display: "flex", gap: "0 0.5rem" }}
-                        >
-                            {todoProps.current.map((prop, idx) => {
-                                return (
-                                    todo[prop] && (
-                                        <Box
-                                            key={idx}
-                                            component="li"
-                                            sx={{ listStyle: "none" }}
-                                        >
-                                            <TodoItemProp
-                                                data={{ prop, val: todo[prop] }}
-                                            />
-                                        </Box>
-                                    )
-                                );
-                            })}
-                        </List>
-                    </Box>
-                </Box>
+                <div>
+                    <p>{todo.title}</p>
+                    <ul className="todo_item_props">
+                        <li>
+                            <p className="todo_item_prop">任务</p>
+                        </li>
+                        {todoProps.current.map((prop, idx) => {
+                            return (
+                                !!todo[prop] && (
+                                    <li key={idx}>
+                                        <TodoItemProp
+                                            data={{ prop, val: todo[prop] }}
+                                        />
+                                    </li>
+                                )
+                            );
+                        })}
+                    </ul>
+                </div>
             </Card>
         </Fragment>
     );
@@ -79,18 +56,19 @@ const TodoItem = ({ data }) => {
 export default TodoItem;
 
 const TodoItemProp = ({ data }) => {
-    const {prop, val} = data;
+    const { prop, val } = data;
 
-    let styles = {},
+    let className = "",
         children = null;
 
     switch (prop) {
         case "priority":
+            className = `priority priority-${val}`;
             children = getPriorityProp(val, "title");
-            styles.color = getPriorityProp(val, "color");
             break;
         case "date":
-            children = getCalendarDate(val);
+            const date = getCalendarDate(val);
+            children = date;
             break;
         case "alarm":
             break;
@@ -100,9 +78,5 @@ const TodoItemProp = ({ data }) => {
             break;
     }
 
-    return (
-        <Typography fontSize="0.75rem" {...styles} sx={{ opacity: 0.8 }}>
-            {children}
-        </Typography>
-    );
+    return <p className={`todo_item_prop ${className}`}>{children}</p>;
 };

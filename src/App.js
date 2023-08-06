@@ -19,7 +19,7 @@ function isValidToken() {
     //     return false;
     // }
 
-    return false;
+    return true;
 }
 
 const PublicRoute = ({ element }) => {

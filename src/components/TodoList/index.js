@@ -40,7 +40,6 @@ const TodoList = memo((props) => {
                     display: "flex",
                     flexFlow: "column nowrap",
                     gap: "1rem 0",
-                    mt: "20px",
                 }}
             >
                 <Catalog title="未完成" count={todo.length} />
