@@ -1,4 +1,4 @@
-import * as React from "react";
+import { useRef, useState } from "react";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -10,12 +10,15 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import validate from "../utils/validate";
-import { SnackbarProvider } from 'notistack';
+import { SnackbarProvider } from "notistack";
+import { Dialog } from "@mui/material";
+import { Input } from "@mui/base";
 
 const defaultTheme = createTheme();
 
 export default function SignUpPage() {
-    const providerRef = React.useRef();
+    const providerRef = useRef();
+    const [open, setOpen] = useState(false);
     // 验证注册表单内容
     const checkForm = (data) => {
         let email = data.get("email"),
@@ -24,23 +27,31 @@ export default function SignUpPage() {
 
         // 验证表单是否有空项
         if (!email || !password || !password1) {
-            providerRef.current.enqueueSnackbar("注册内容不能为空！", { variant: "error" });
+            providerRef.current.enqueueSnackbar("注册内容不能为空！", {
+                variant: "error",
+            });
             return;
         }
         // 验证邮箱合法性
         if (!validate.valiEmail(email)) {
-            providerRef.current.enqueueSnackbar("邮箱格式不合法！", { variant: "error" });
+            providerRef.current.enqueueSnackbar("邮箱格式不合法！", {
+                variant: "error",
+            });
             return;
         }
         // 验证密码合法性
         if (!validate.valiPwd(password)) {
-            providerRef.current.enqueueSnackbar("密码格式不合法！", { variant: "error" });
+            providerRef.current.enqueueSnackbar("密码格式不合法！", {
+                variant: "error",
+            });
             return;
         }
 
         // 验证两次密码是否相同
         if (password !== password1) {
-            providerRef.current.enqueueSnackbar("两次密码输入不同！", { variant: "warning" });
+            providerRef.current.enqueueSnackbar("两次密码输入不同！", {
+                variant: "warning",
+            });
             return;
         }
 
@@ -60,6 +71,18 @@ export default function SignUpPage() {
         checkForm(data);
     };
 
+    const handleAvatarClick = () => {
+        setOpen(true);
+    };
+
+    const handleFileChange = () => {
+
+    };
+
+    const handleUpload = () => {
+
+    };
+
     return (
         <SnackbarProvider ref={providerRef} maxSnack={3}>
             <ThemeProvider theme={defaultTheme}>
@@ -77,7 +100,10 @@ export default function SignUpPage() {
                             alignItems: "center",
                         }}
                     >
-                        <Avatar sx={{ m: 1, bgcolor: "orange" }}></Avatar>
+                        <Avatar
+                            sx={{ m: 1, bgcolor: "orange" }}
+                            onClick={handleAvatarClick}
+                        ></Avatar>
                         <Typography component="h1" variant="h5">
                             注册
                         </Typography>
@@ -145,6 +171,16 @@ export default function SignUpPage() {
                         </Box>
                     </Box>
                 </Container>
+                <Dialog
+                    open={open}
+                    onClose={() => {
+                        setOpen(false);
+                    }}
+                >
+                    诶嘿不好意思哦，这里还没有完成，原因是我还没学会。退出对话框的话点击一下对话框以外的任意位置就好。
+                    <Input type="file" onChange={handleFileChange} />
+                    <Button onClick={handleUpload}>更新</Button>
+                </Dialog>
             </ThemeProvider>
         </SnackbarProvider>
     );
