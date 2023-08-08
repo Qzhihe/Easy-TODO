@@ -7,8 +7,6 @@ export function getCalendarDate(date) {
 
     const delta = Math.ceil(date.diff(dayjs(), "day", true));
 
-    console.log(delta);
-
     if (delta < 0) {
         return "过期";
     }
