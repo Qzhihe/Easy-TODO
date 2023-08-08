@@ -14,6 +14,8 @@ import TodoItem from "./TodoItem";
 import { StoreContext } from "../../store/store";
 
 const TodoList = memo((props) => {
+    const { handleSelectTodo } = props;
+
     const {
         store: { todoList },
         // setStore,
@@ -40,6 +42,7 @@ const TodoList = memo((props) => {
                     display: "flex",
                     flexFlow: "column nowrap",
                     gap: "1rem 0",
+                    overflow: "auto",
                 }}
             >
                 <Catalog title="未完成" count={todo.length} />
@@ -54,7 +57,10 @@ const TodoList = memo((props) => {
                     {todo.map((item) => {
                         return (
                             <Fragment key={item.id}>
-                                <TodoItem data={item} />
+                                <TodoItem
+                                    data={item}
+                                    handleSelectTodo={handleSelectTodo}
+                                />
                             </Fragment>
                         );
                     })}
@@ -72,7 +78,10 @@ const TodoList = memo((props) => {
                     {done.map((item) => {
                         return (
                             <Fragment key={item.id}>
-                                <TodoItem data={item} />
+                                <TodoItem
+                                    data={item}
+                                    handleSelectTodo={handleSelectTodo}
+                                />
                             </Fragment>
                         );
                     })}
@@ -89,8 +98,10 @@ const Catalog = (props) => {
         <Fragment>
             <Card
                 sx={{
+                    display: "flex",
                     boxShadow: "none",
                     backgroundColor: "rgb(245, 245, 245)",
+                    overflow: "visible",
                 }}
             >
                 <Box

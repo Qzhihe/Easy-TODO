@@ -14,14 +14,27 @@ import { getPriorityProp } from "../../utils/priority";
 
 import "./index.css";
 
-const TodoItem = ({ data }) => {
+const TodoItem = (props) => {
+    const { data, handleSelectTodo } = props;
+
     const todoProps = useRef(["priority", "date", "alarm", "category"]);
 
     const todo = data;
 
+    function handleClick(todo) {
+        handleSelectTodo(todo);
+    }
+
     return (
         <Fragment>
-            <Card component="li" className="todo_item">
+            <Card
+                component="li"
+                className="todo_item"
+                onClick={() => handleClick(todo)}
+                style={{
+                    backgroundColor: '',
+                }}
+            >
                 <FontAwesomeIcon
                     size="lg"
                     icon={faCircleNotch}
