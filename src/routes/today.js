@@ -41,6 +41,7 @@ import TodoList from "../components/TodoList";
 import { getPriorityProp } from "../utils/priority";
 import { getCalendarDate } from "../utils/date";
 import { sendRequest } from "../utils/request";
+import PriorityRadio from "../components/PriorityRadio";
 
 dayjs.extend(localizedFormat);
 
@@ -156,11 +157,13 @@ const TodayPage = (props) => {
 
     function handleDetialTitleChange(event) {
         let newTitle = event.target.value;
+        setHasChanged(true);
         setSelectedTodo({ ...selectedTodo, title: newTitle });
     }
 
     function handleDetailDescChange(event) {
         let newDesc = event.target.value;
+        setHasChanged(true);
         setSelectedTodo({ ...selectedTodo, description: newDesc });
     }
 
@@ -179,14 +182,17 @@ const TodayPage = (props) => {
         if (state === "finish") {
             setDeDateMenuAnchor(null);
         }
+        setHasChanged(true);
         setSelectedTodo({ ...selectedTodo, date: date });
     }
 
     function handleDetailPri(event) {
         setDePriorityMenuAnchor(event.target);
     }
+
     function handleDePriorityChange(ev) {
         const priority = parseInt(ev.target.getAttribute("data-priority"));
+        setHasChanged(true);
         setSelectedTodo({ ...selectedTodo, priority });
     }
 
@@ -207,6 +213,7 @@ const TodayPage = (props) => {
                 let id = selectedTodo.id;
                 let deletedTodoList = todoList.filter((item) => item.id !== id);
                 setStore((prev) => ({ ...prev, todoList: deletedTodoList }));
+                setHasChanged(false);
                 setShowDetail(false);
             }
         } catch (err) {
@@ -215,8 +222,11 @@ const TodayPage = (props) => {
     }
 
     function handleCancel() {
+        setHasChanged(false);
         setShowDetail(false);
     }
+
+    const [hasChanged, setHasChanged] = useState(false);
 
     async function handleSubmit() {
         console.log("更改后的信息如下：", selectedTodo);
@@ -242,6 +252,7 @@ const TodayPage = (props) => {
                     return prev;
                 }, []);
                 setStore((prev) => ({ ...prev, todoList: updatedTodoList }));
+                setHasChanged(false);
                 setShowDetail(false);
             }
         } catch (err) {
@@ -644,18 +655,29 @@ const TodayPage = (props) => {
                             >
                                 取消
                             </Button>
-                            <Button
-                                sx={{
-                                    width: "40%",
-                                    color: "black",
-                                }}
-                                onClick={() => {
-                                    handleSubmit();
-                                }}
-                                // 这里有一个想法，就是当前面这些信息改变的时候，保存才可操作，否则不能操作
-                            >
-                                保存
-                            </Button>
+                            {!hasChanged ? (
+                                <Button
+                                    sx={{
+                                        width: "40%",
+                                        color: "black",
+                                    }}
+                                    disabled
+                                >
+                                    保存
+                                </Button>
+                            ) : (
+                                <Button
+                                    sx={{
+                                        width: "40%",
+                                        color: "black",
+                                    }}
+                                    onClick={() => {
+                                        handleSubmit();
+                                    }}
+                                >
+                                    保存
+                                </Button>
+                            )}
                         </Box>
                     </Toolbar>
                 )}
@@ -813,7 +835,6 @@ const TodayPage = (props) => {
                     <Button
                         onClick={() => {
                             setOpenDialog(false);
-                            console.log("取消");
                         }}
                     >
                         取消
@@ -834,58 +855,6 @@ const TodayPage = (props) => {
 };
 
 export default TodayPage;
-
-const PriorityRadio = ({ priority, active }) => {
-    const styles = {};
-
-    if (active) {
-        styles.backgroundColor = "#ecf1ff";
-    }
-
-    return (
-        <Fragment>
-            <Tooltip title={getPriorityProp(priority, "title")} arrow>
-                <Box
-                    component="li"
-                    data-priority={priority}
-                    sx={{
-                        position: "relative",
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        width: "1.5rem",
-                        minHeight: "1.5rem",
-                        textAlign: "center",
-                        fontSize: "1rem",
-                        borderRadius: "4px",
-                        cursor: "pointer",
-                        ...styles,
-
-                        "&:hover::before": {
-                            content: `""`,
-                            position: "absolute",
-                            top: "50%",
-                            left: "50%",
-                            display: "block",
-                            width: "130%",
-                            height: "130%",
-                            borderRadius: "4px",
-                            transform: "translate(-50%, -50%)",
-                            backgroundColor: "rgba(215, 215, 215, 0.3)",
-                            pointerEvents: "none",
-                        },
-                    }}
-                >
-                    <FontAwesomeIcon
-                        icon={faFlag}
-                        color={`rgb(${getPriorityProp(priority, "color")})`}
-                        style={{ position: "absolute", pointerEvents: "none" }}
-                    />
-                </Box>
-            </Tooltip>
-        </Fragment>
-    );
-};
 
 const Catalog = (props) => {
     const { title, count } = props;
