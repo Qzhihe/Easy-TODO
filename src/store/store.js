@@ -1,7 +1,6 @@
 import { useState, createContext } from "react";
 
 const initialStore = {
-    activeNav: 0,
     todoList: [],
 };
 

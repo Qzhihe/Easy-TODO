@@ -22,7 +22,7 @@ const TodoItem = (props) => {
     const todo = data;
 
     function handleClick(todo) {
-        handleSelectTodo(todo);
+        handleSelectTodo?.(todo);
     }
 
     return (
@@ -31,8 +31,10 @@ const TodoItem = (props) => {
                 component="li"
                 className="todo_item"
                 onClick={() => handleClick(todo)}
-                style={{
-                    backgroundColor: '',
+                sx={{
+                    mb: "4px",
+                    flexShrink: 0,
+                    backgroundColor: "",
                 }}
             >
                 <FontAwesomeIcon
@@ -43,7 +45,7 @@ const TodoItem = (props) => {
                 />
 
                 <div>
-                    <p>{todo.title}</p>
+                    <p style={{ fontSize: "0.875rem" }}>{todo.title}</p>
                     <ul className="todo_item_props">
                         <li>
                             <p className="todo_item_prop">任务</p>

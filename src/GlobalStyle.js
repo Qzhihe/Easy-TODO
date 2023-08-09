@@ -19,15 +19,12 @@ const GlobalStyle = createGlobalStyle`
         height: 100%;
     }
 
-    .no-hover:hover {
-        background-color: rgba(0, 0, 0, 0) !important;
-    }
-
     ::-webkit-scrollbar {
-        width: 5px;
+        width: 0.25rem;
     }
 
     ::-webkit-scrollbar-thumb {
+        border-radius: 0.25rem;
         background: rgba(255, 128, 0, .6);
     }
 

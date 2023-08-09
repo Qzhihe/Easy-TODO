@@ -1,28 +1,11 @@
-import { Fragment, memo, useContext } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Fragment, memo } from "react";
 
-import {
-    // faCircleCheck,
-    // faCircleNotch,
-    faChevronDown,
-} from "@fortawesome/free-solid-svg-icons";
-
-import { Box, Card, List, Typography } from "@mui/material";
+import { Box, List } from "@mui/material";
 
 import TodoItem from "./TodoItem";
 
-import { StoreContext } from "../../store/store";
-
 const TodoList = memo((props) => {
-    const { handleSelectTodo } = props;
-
-    const {
-        store: { todoList },
-        // setStore,
-    } = useContext(StoreContext);
-
-    const todo = todoList.filter((item) => !item.isDone);
-    const done = todoList.filter((item) => item.isDone);
+    const { data, handleSelectTodo } = props;
 
     // function handleComplete(id) {
     //     console.log(id + "这条日程要完成了，该发请求了");
@@ -37,89 +20,28 @@ const TodoList = memo((props) => {
 
     return (
         <Fragment>
-            <Box
+            <List
+                disablePadding
                 sx={{
                     display: "flex",
                     flexFlow: "column nowrap",
                     gap: "1rem 0",
-                    overflow: "auto",
+                    width: "100%",
                 }}
             >
-                <Catalog title="未完成" count={todo.length} />
-                <List
-                    disablePadding
-                    sx={{
-                        display: "flex",
-                        flexFlow: "column nowrap",
-                        gap: "1rem 0",
-                    }}
-                >
-                    {todo.map((item) => {
-                        return (
-                            <Fragment key={item.id}>
-                                <TodoItem
-                                    data={item}
-                                    handleSelectTodo={handleSelectTodo}
-                                />
-                            </Fragment>
-                        );
-                    })}
-                </List>
-
-                <Catalog title="已完成" count={done.length} />
-                <List
-                    disablePadding
-                    sx={{
-                        display: "flex",
-                        flexFlow: "column nowrap",
-                        gap: "1rem 0",
-                    }}
-                >
-                    {done.map((item) => {
-                        return (
-                            <Fragment key={item.id}>
-                                <TodoItem
-                                    data={item}
-                                    handleSelectTodo={handleSelectTodo}
-                                />
-                            </Fragment>
-                        );
-                    })}
-                </List>
-            </Box>
+                {data.map((item) => {
+                    return (
+                        <Fragment key={item.id}>
+                            <TodoItem
+                                data={item}
+                                handleSelectTodo={handleSelectTodo}
+                            />
+                        </Fragment>
+                    );
+                })}
+            </List>
         </Fragment>
     );
 });
-export default TodoList;
 
-const Catalog = (props) => {
-    const { title, count } = props;
-    return (
-        <Fragment>
-            <Card
-                sx={{
-                    display: "flex",
-                    boxShadow: "none",
-                    backgroundColor: "rgb(245, 245, 245)",
-                    overflow: "visible",
-                }}
-            >
-                <Box
-                    onClick={() => {}}
-                    sx={{
-                        display: "grid",
-                        gridTemplate: "1fr / auto auto auto",
-                        columnGap: "12px",
-                        width: "fit-content",
-                        userSelect: "none",
-                        cursor: "pointer",
-                    }}
-                >
-                    <FontAwesomeIcon icon={faChevronDown} size="lg" />
-                    <Typography>{title}</Typography>
-                    <Typography>{count}</Typography>
-                </Box>
-            </Card>
-        </Fragment>
-    );
-};
+export default TodoList;

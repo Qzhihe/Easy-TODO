@@ -11,6 +11,7 @@ import SignUpPage from "./routes/signup";
 import WelcomePage from "./routes/welcome";
 import NotFound from "./routes/404/404";
 import TodayPage from "./routes/today";
+import FourQuadrant from "./routes/FourQuadrant";
 
 function isValidToken() {
     // const token = localStorage.getItem("authToken");
@@ -58,6 +59,10 @@ function App() {
                         >
                             <Route index element={<Navigate to="today" />} />
                             <Route path="today" element={<TodayPage />} />
+                            <Route
+                                path="four-quadrant"
+                                element={<FourQuadrant />}
+                            />
                         </Route>
 
                         <Route path="*" element={<NotFound />} />
