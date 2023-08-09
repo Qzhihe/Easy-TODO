@@ -27,10 +27,11 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import {
     faPlus,
     faFlag,
-    faCalendarDays,
+    faTrashCan,
     faCircleNotch,
     faCircleCheck,
-    faTrashCan,
+    faChevronDown,
+    faCalendarDays,
 } from "@fortawesome/free-solid-svg-icons";
 
 import { faSun } from "@fortawesome/free-regular-svg-icons";
@@ -66,7 +67,8 @@ const TodayPage = (props) => {
 
     // let themeIcon = nightTheme ? faMoon : faSun;
     const todoList = store.todoList;
-
+    const undoneList = todoList.filter((item) => !item.isDone);
+    const doneList = todoList.filter((item) => item.isDone);
     // function getTodos() {}
 
     useEffect(() => {
@@ -410,7 +412,26 @@ const TodayPage = (props) => {
                         </Box>
                     </Card>
 
-                    <TodoList handleSelectTodo={handleSelectTodo} />
+                    <div
+                        style={{
+                            display: "flex",
+                            flexFlow: "column nowrap",
+                            gap: "1rem",
+                            overflow: "auto",
+                        }}
+                    >
+                        <Catalog title="未完成" count={undoneList.length} />
+                        <TodoList
+                            data={undoneList}
+                            handleSelectTodo={handleSelectTodo}
+                        />
+
+                        <Catalog title="已完成" count={doneList.length} />
+                        <TodoList
+                            data={doneList}
+                            handleSelectTodo={handleSelectTodo}
+                        />
+                    </div>
                 </Box>
 
                 {showDetail && (
@@ -862,6 +883,38 @@ const PriorityRadio = ({ priority, active }) => {
                     />
                 </Box>
             </Tooltip>
+        </Fragment>
+    );
+};
+
+const Catalog = (props) => {
+    const { title, count } = props;
+    return (
+        <Fragment>
+            <Card
+                sx={{
+                    display: "flex",
+                    boxShadow: "none",
+                    backgroundColor: "rgb(245, 245, 245)",
+                    overflow: "visible",
+                }}
+            >
+                <Box
+                    onClick={() => {}}
+                    sx={{
+                        display: "grid",
+                        gridTemplate: "1fr / auto auto auto",
+                        columnGap: "12px",
+                        width: "fit-content",
+                        userSelect: "none",
+                        cursor: "pointer",
+                    }}
+                >
+                    <FontAwesomeIcon icon={faChevronDown} size="lg" />
+                    <Typography>{title}</Typography>
+                    <Typography>{count}</Typography>
+                </Box>
+            </Card>
         </Fragment>
     );
 };

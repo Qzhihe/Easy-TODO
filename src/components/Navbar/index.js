@@ -1,23 +1,22 @@
 import { Fragment, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import NavItem from "./NavItem";
-
 import { faBars } from "@fortawesome/free-solid-svg-icons";
-import { faSun } from "@fortawesome/free-regular-svg-icons";
 
 import { List, IconButton, Box, Toolbar } from "@mui/material";
 
+import NavItem from "./NavItem";
+import { useLocation } from "react-router-dom";
+import NavItems, { getActiveNavId } from "../../config/navbar.config";
+
 const Navbar = (props) => {
-    const [seleced, setSelected] = useState(0);
+    const location = useLocation();
+    const [activeNav, setNavActive] = useState(
+        getActiveNavId(location.pathname)
+    );
 
-    const navItems = [
-        { icon: faSun, title: "我的一天" },
-        { icon: null, title: "示例" },
-    ];
-
-    function handleNavItemClick(index) {
-        setSelected(index);
+    function handleNavItemClick(id) {
+        setNavActive(id);
     }
 
     return (
@@ -28,7 +27,7 @@ const Navbar = (props) => {
                 sx={{
                     display: "flex",
                     flexFlow: "column nowrap",
-                    width: "18rem",
+                    minWidth: "10rem",
                     height: "100%",
                     boxShadow: "1px 0 4px rgba(0, 0, 0, 0.1)",
                     backgroundColor: "rgb(255, 255, 255)",
@@ -50,14 +49,15 @@ const Navbar = (props) => {
                     )}
                 </Box>
                 <List sx={{ width: "100%" }}>
-                    {navItems.map((item, idx) => (
-                        <Fragment key={idx}>
+                    {NavItems.map((item, idx) => (
+                        <Fragment key={item.id}>
                             <NavItem
-                                id={idx}
+                                id={item.id}
+                                to={item.to}
                                 icon={item.icon}
                                 title={item.title}
-                                isActive={seleced === idx}
-                                onClick={handleNavItemClick}
+                                isActive={activeNav === item.id}
+                                handleNavItemClick={handleNavItemClick}
                             />
                         </Fragment>
                     ))}
