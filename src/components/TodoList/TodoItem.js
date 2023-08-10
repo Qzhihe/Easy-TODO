@@ -1,8 +1,8 @@
-import { Fragment, useRef } from "react";
+import { Fragment, useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import {
-    // faCircleCheck,
+    faCircleCheck,
     // faChevronDown,
     faCircleNotch,
 } from "@fortawesome/free-solid-svg-icons";
@@ -15,14 +15,22 @@ import { getPriorityProp } from "../../utils/priority";
 import "./index.css";
 
 const TodoItem = (props) => {
-    const { data, handleSelectTodo } = props;
+    const { data, onHandleSelectTodo, onHandleCplt } = props;
+    const [icon, setIcon] = useState(data.isDone ? faCircleCheck : faCircleNotch);
 
     const todoProps = useRef(["priority", "date", "alarm", "category"]);
 
     const todo = data;
 
     function handleClick(todo) {
-        handleSelectTodo?.(todo);
+        onHandleSelectTodo?.(todo);
+    }
+
+    function handleCplt(event) {
+        event.stopPropagation();
+        todo.isDone = !todo.isDone;
+        setIcon(icon === faCircleCheck ? faCircleNotch : faCircleCheck);
+        onHandleCplt(todo);
     }
 
     return (
@@ -39,9 +47,9 @@ const TodoItem = (props) => {
             >
                 <FontAwesomeIcon
                     size="lg"
-                    icon={faCircleNotch}
+                    icon={icon}
                     color="rgb(255, 128, 0)"
-                    onClick={() => {}}
+                    onClick={handleCplt}
                 />
 
                 <div>

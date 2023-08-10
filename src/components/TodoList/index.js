@@ -5,7 +5,7 @@ import { Box, List } from "@mui/material";
 import TodoItem from "./TodoItem";
 
 const TodoList = memo((props) => {
-    const { data, handleSelectTodo } = props;
+    const { data, onHandleSelectTodo, onHandleCplt } = props;
 
     // function handleComplete(id) {
     //     console.log(id + "这条日程要完成了，该发请求了");
@@ -34,7 +34,8 @@ const TodoList = memo((props) => {
                         <Fragment key={item.id}>
                             <TodoItem
                                 data={item}
-                                handleSelectTodo={handleSelectTodo}
+                                onHandleSelectTodo={onHandleSelectTodo}
+                                onHandleCplt={onHandleCplt}
                             />
                         </Fragment>
                     );

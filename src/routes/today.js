@@ -146,6 +146,37 @@ const TodayPage = (props) => {
         }
     }
 
+    async function handleCplt(todo) {
+        console.log(todo);
+        const { date, id, ...others } = todo;
+        const payload = {
+            ...others,
+            scheId: id,
+            sTime: date && date.toJSON(),
+        };
+        try {
+            const data = await sendRequest({
+                method: "PUT",
+                url: "/schedule",
+                data: payload,
+            });
+            if (data.code === 20000) {
+                console.log('修改状态成功！');
+                const updatedTodoList = todoList.reduce((prev, cur) => {
+                    if (cur.id === todo.id) {
+                        prev.push(todo);
+                    } else {
+                        prev.push(cur);
+                    }
+                    return prev;
+                }, []);
+                setStore((prev) => ({...prev, todoList: updatedTodoList}));
+            }
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
     function handleSelectTodo(todo) {
         console.log(todo);
         setShowDetail(true);
@@ -172,6 +203,7 @@ const TodayPage = (props) => {
     function handleDetailCplt() {
         setSelectedTodo({ ...selectedTodo, isDone: !selectedTodo.isDone });
         setCpltIcon(cpltIcon === faCircleCheck ? faCircleNotch : faCircleCheck);
+        setHasChanged(true);
     }
 
     function handleDetailDate(event) {
@@ -242,7 +274,6 @@ const TodayPage = (props) => {
                 url: "/schedule",
                 data: payload,
             });
-            console.log(data);
             if (data.code === 20000) {
                 console.log("修改日程成功！");
                 let updatedTodoList = todoList.reduce((prev, cur) => {
@@ -434,13 +465,15 @@ const TodayPage = (props) => {
                         <Catalog title="未完成" count={undoneList.length} />
                         <TodoList
                             data={undoneList}
-                            handleSelectTodo={handleSelectTodo}
+                            onHandleSelectTodo={handleSelectTodo}
+                            onHandleCplt={handleCplt}
                         />
 
                         <Catalog title="已完成" count={doneList.length} />
                         <TodoList
                             data={doneList}
-                            handleSelectTodo={handleSelectTodo}
+                            onHandleSelectTodo={handleSelectTodo}
+                            onHandleCplt={handleCplt}
                         />
                     </div>
                 </Box>
@@ -478,7 +511,7 @@ const TodayPage = (props) => {
                                 <IconButton onClick={handleDetailCplt}>
                                     <FontAwesomeIcon
                                         size="sm"
-                                        icon={cpltIcon}
+                                        icon={selectedTodo.isDone ? faCircleCheck : faCircleNotch}
                                         color={
                                             selectedTodo
                                                 ? "rgb(255, 128, 0)"
