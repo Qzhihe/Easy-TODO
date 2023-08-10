@@ -1,12 +1,79 @@
-import { Fragment } from "react";
+import { Fragment, useContext, useEffect, useState } from "react";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import { AppBar as MuiAppBar } from "@mui/material";
+import {
+    AppBar as MuiAppBar,
+    Dialog,
+    DialogContent,
+    DialogTitle,
+    Input,
+    List,
+    ListItem,
+    ListItemButton,
+} from "@mui/material";
 
 import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
+import { StoreContext } from "../store/store";
+import { sendRequest } from "../utils/request";
+import dayjs from "dayjs";
 
 const Topbar = (props) => {
+    const defaultSearch = [{title: "搜索结果", id: '0'}];
+    const [open, setOpen] = useState(false);
+    const [search, setSearch] = useState("");
+    const [searchList, setSearchList] = useState(defaultSearch);
+
+    const { store, setStore } = useContext(StoreContext);
+    const todoList = store.todoList;
+
+    useEffect(() => {
+        sendRequest({
+            url: "/schedule/all",
+            method: "GET",
+        })
+            .then(({ data }) => {
+                const currentTodoList = data.map(
+                    ({ sTime, eTime, userId, scheId, ...others }) => {
+                        return {
+                            id: scheId,
+                            date: sTime && dayjs(sTime).locale("zh-cn"),
+                            ...others,
+                        };
+                    }
+                );
+
+                currentTodoList.sort((a, b) => b.id - a.id);
+
+                setStore((prev) => ({ ...prev, todoList: currentTodoList }));
+            })
+            .catch((err) => {
+                console.error(err);
+            });
+    }, [setStore]);
+
+    function handleInputClick() {
+        setSearch("");
+        setOpen(true);
+    }
+
+    function handleChange(event) {
+        let data = event.target.value;
+        setSearch(data);
+    }
+
+    function handleEnter(event) {
+        if (event.key === 'Enter' && search !== '') {
+            console.log(todoList);
+
+            setSearchList(
+                todoList.filter((item) => item.title.includes(search) || item.description.includes(search))
+            );
+        } else if (event.key === 'Enter' && search === '') {
+            setSearchList(defaultSearch);
+        }
+    }
+
     return (
         <Fragment>
             <AppBar
@@ -31,10 +98,37 @@ const Topbar = (props) => {
                         size="lg"
                         style={{ color: "rgb(255, 128, 0)" }}
                     />
-                    <input type="text" />
+                    <input type="text" onClick={handleInputClick} />
                 </div>
                 <div id="avatar"></div>
             </AppBar>
+            <Dialog
+                open={open}
+                onClose={() => {
+                    setOpen(false);
+                }}
+                maxWidth="sm"
+                fullWidth
+            >
+                <DialogTitle>
+                    <Input
+                        placeholder="搜索关键字"
+                        onChange={handleChange}
+                        onKeyDown={handleEnter}
+                        value={search}
+                        sx={{ width: "100%" }}
+                    />
+                </DialogTitle>
+                <DialogContent>
+                    <List>
+                        {searchList.map((item) => (
+                            <ListItem key={item.id}>
+                                <ListItemButton >{item.title}{item.description ? `—${item.description}` : ''}</ListItemButton>
+                            </ListItem>
+                        ))}
+                    </List>
+                </DialogContent>
+            </Dialog>
         </Fragment>
     );
 };
