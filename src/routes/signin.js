@@ -16,6 +16,8 @@ import {
     CssBaseline,
 } from "@mui/material";
 
+import { doLogin } from "../api/app";
+
 const defaultTheme = createTheme();
 
 const SignInPage = () => {
@@ -43,14 +45,7 @@ const SignInPage = () => {
         }
 
         try {
-            const result = await axios({
-                url: `${process.env.REACT_APP_API_URL}/user/login`,
-                method: "post",
-                data: {
-                    username: name,
-                    password: pwd,
-                },
-            });
+            const result = await doLogin(name, pwd);
 
             if (result.data.code === 20000) {
                 localStorage.setItem("authToken", result.data.data.token);

@@ -21,7 +21,9 @@ const FourQuadrant = () => {
             return [];
         }
 
-        return todoList.filter((item) => item.priority === priority);
+        return todoList.filter(
+            (item) => !item.isDone && item.priority === priority
+        );
     }
 
     return (
@@ -65,7 +67,13 @@ const Quadrant = (props) => {
 
     return (
         <Fragment>
-            <Card sx={{ display: "flex", width: "100%", height: "100%" }}>
+            <Card
+                sx={{
+                    display: "flex",
+                    width: "100%",
+                    height: "100%",
+                }}
+            >
                 <div className="quadrant">
                     <div
                         style={{
