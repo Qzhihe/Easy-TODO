@@ -43,6 +43,7 @@ import { getCalendarDate } from "../utils/date";
 import { sendRequest } from "../utils/request";
 import PriorityRadio from "../components/PriorityRadio";
 import { addTodo, deleteTodo, getTodoList, updateTodo } from "../api/todo";
+import { getUserInfo } from "../api/app";
 
 dayjs.extend(localizedFormat);
 
@@ -80,6 +81,19 @@ const TodayPage = (props) => {
     useEffect(() => {
         (async () => {
             try {
+                const result = await getUserInfo();
+                if (result.code === 20000) {
+                    localStorage.setItem('userId', result.data.id);
+                } else {
+                    throw(new Error('用户信息拿取失败'));
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        })();
+
+        (async () => {
+            try {
                 const result = await getTodoList();
 
                 result.sort((a, b) => b.id - a.id);
@@ -87,7 +101,7 @@ const TodayPage = (props) => {
             } catch (err) {
                 console.error(err);
             }
-        })();
+        })(); 
     }, [setStore]);
 
     // TODO: 主题更换
