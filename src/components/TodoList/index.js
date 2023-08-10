@@ -1,22 +1,11 @@
 import { Fragment, memo } from "react";
 
-import { Box, List } from "@mui/material";
+import { List } from "@mui/material";
 
 import TodoItem from "./TodoItem";
 
 const TodoList = memo((props) => {
     const { data, onHandleSelectTodo, onHandleCplt } = props;
-
-    // function handleComplete(id) {
-    //     console.log(id + "这条日程要完成了，该发请求了");
-    //     const taskIndex = todoList.findIndex((task) => task.id === id);
-    //     if (taskIndex !== -1) {
-    //         const updatedList = [...todoList];
-    //         updatedList[taskIndex].state = "1";
-
-    //         setStore((prev) => ({ ...prev, todoList: updatedList }));
-    //     }
-    // }
 
     return (
         <Fragment>
