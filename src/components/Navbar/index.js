@@ -1,4 +1,4 @@
-import { Fragment, useState } from "react";
+import { Fragment, useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { faBars } from "@fortawesome/free-solid-svg-icons";
@@ -11,9 +11,11 @@ import NavItems, { getActiveNavId } from "../../config/navbar.config";
 
 const Navbar = (props) => {
     const location = useLocation();
-    const [activeNav, setNavActive] = useState(
-        getActiveNavId(location.pathname)
-    );
+    const [activeNav, setNavActive] = useState(null);
+
+    useEffect(() => {
+        setNavActive(getActiveNavId(location.pathname));
+    }, [setNavActive, location]);
 
     function handleNavItemClick(id) {
         setNavActive(id);
