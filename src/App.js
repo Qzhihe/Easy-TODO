@@ -14,11 +14,11 @@ import TodayPage from "./routes/today";
 import FourQuadrant from "./routes/FourQuadrant";
 
 function isValidToken() {
-    // const token = localStorage.getItem("authToken");
+    const token = localStorage.getItem("authToken");
 
-    // if (!token) {
-    //     return false;
-    // }
+    if (!token) {
+        return false;
+    }
 
     return true;
 }
