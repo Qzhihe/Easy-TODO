@@ -42,6 +42,7 @@ import { getPriorityProp } from "../utils/priority";
 import { getCalendarDate } from "../utils/date";
 import { sendRequest } from "../utils/request";
 import PriorityRadio from "../components/PriorityRadio";
+import { addTodo, deleteTodo, getTodoList, updateTodo } from "../api/todo";
 
 dayjs.extend(localizedFormat);
 
@@ -59,12 +60,16 @@ const TodayPage = (props) => {
     const { store, setStore } = useContext(StoreContext);
 
     // const [nightTheme, setChangeTheme] = useState(false);
+    const [hasChanged, setHasChanged] = useState(false);
+    const [openDialog, setOpenDialog] = useState(false);
+    const [showDetail, setShowDetail] = useState(false);
+    const [cpltIcon, setCpltIcon] = useState(faCircleNotch);
     const [nextTodo, setNextTodo] = useState(defaultNextTodo);
     const [dateMenuAnchor, setDateMenuAnchor] = useState(null);
-    const [priorityMenuAnchor, setPriorityMenuAnchor] = useState(null);
-    const [dePriorityMenuAnchor, setDePriorityMenuAnchor] = useState(null);
     const [deDateMenuAnchor, setDeDateMenuAnchor] = useState(null);
     const [selectedTodo, setSelectedTodo] = useState(defaultNextTodo);
+    const [priorityMenuAnchor, setPriorityMenuAnchor] = useState(null);
+    const [dePriorityMenuAnchor, setDePriorityMenuAnchor] = useState(null);
 
     // let themeIcon = nightTheme ? faMoon : faSun;
     const todoList = store.todoList;
@@ -73,55 +78,22 @@ const TodayPage = (props) => {
     // function getTodos() {}
 
     useEffect(() => {
-        sendRequest({
-            url: "/schedule/all",
-            method: "GET",
-        })
-            .then(({ data }) => {
-                const currentTodoList = data.map(
-                    ({ sTime, eTime, userId, scheId, ...others }) => {
-                        return {
-                            id: scheId,
-                            date: sTime && dayjs(sTime).locale("zh-cn"),
-                            ...others,
-                        };
-                    }
-                );
+        (async () => {
+            try {
+                const result = await getTodoList();
 
-                currentTodoList.sort((a, b) => b.id - a.id);
-
-                setStore((prev) => ({ ...prev, todoList: currentTodoList }));
-            })
-            .catch((err) => {
+                result.sort((a, b) => b.id - a.id);
+                setStore((prev) => ({ ...prev, todoList: result }));
+            } catch (err) {
                 console.error(err);
-            });
+            }
+        })();
     }, [setStore]);
 
     // TODO: 主题更换
     // function changeTheme() {
     //     setChangeTheme(!nightTheme);
     // }
-
-    async function addTodo(todo) {
-        const { date, ...others } = todo;
-        const payload = {
-            ...others,
-            sTime: date && date.toJSON(),
-        };
-
-        try {
-            const { data: id } = await sendRequest({
-                method: "POST",
-                url: "/schedule",
-                data: payload,
-            });
-
-            const currentList = [{ ...todo, id }, ...todoList];
-            setStore((prev) => ({ ...prev, todoList: currentList }));
-        } catch (err) {
-            console.error(err);
-        }
-    }
 
     function handleTitleChange(ev) {
         setNextTodo({ ...nextTodo, title: ev.target.value });
@@ -139,15 +111,22 @@ const TodayPage = (props) => {
         setNextTodo({ ...nextTodo, date });
     }
 
-    function handleInputEnter(ev) {
+    async function handleInputEnter(ev) {
         if (ev.key === "Enter" && nextTodo.title) {
-            addTodo(nextTodo);
-            setNextTodo(defaultNextTodo);
+            try {
+                const result = await addTodo(nextTodo);
+
+                const currentList = [{ ...nextTodo, result }, ...todoList];
+                setStore((prev) => ({ ...prev, todoList: currentList }));
+
+                setNextTodo(defaultNextTodo);
+            } catch (err) {
+                console.error(err);
+            }
         }
     }
 
     async function handleCplt(todo) {
-        console.log(todo);
         const { date, id, ...others } = todo;
         const payload = {
             ...others,
@@ -161,7 +140,6 @@ const TodayPage = (props) => {
                 data: payload,
             });
             if (data.code === 20000) {
-                console.log('修改状态成功！');
                 const updatedTodoList = todoList.reduce((prev, cur) => {
                     if (cur.id === todo.id) {
                         prev.push(todo);
@@ -170,7 +148,7 @@ const TodayPage = (props) => {
                     }
                     return prev;
                 }, []);
-                setStore((prev) => ({...prev, todoList: updatedTodoList}));
+                setStore((prev) => ({ ...prev, todoList: updatedTodoList }));
             }
         } catch (err) {
             console.error(err);
@@ -178,13 +156,10 @@ const TodayPage = (props) => {
     }
 
     function handleSelectTodo(todo) {
-        console.log(todo);
         setShowDetail(true);
         setCpltIcon(todo.isDone ? faCircleCheck : faCircleNotch);
         setSelectedTodo(todo);
     }
-
-    const [showDetail, setShowDetail] = useState(false);
 
     function handleDetialTitleChange(event) {
         let newTitle = event.target.value;
@@ -197,8 +172,6 @@ const TodayPage = (props) => {
         setHasChanged(true);
         setSelectedTodo({ ...selectedTodo, description: newDesc });
     }
-
-    const [cpltIcon, setCpltIcon] = useState(faCircleNotch);
 
     function handleDetailCplt() {
         setSelectedTodo({ ...selectedTodo, isDone: !selectedTodo.isDone });
@@ -228,23 +201,41 @@ const TodayPage = (props) => {
         setSelectedTodo({ ...selectedTodo, priority });
     }
 
-    const [openDialog, setOpenDialog] = useState(false);
-
     function makeConfirm() {
         setOpenDialog(true);
     }
 
     async function handleDetialDelete() {
         try {
-            const data = await sendRequest({
-                method: "DELETE",
-                url: `/schedule/${selectedTodo.id}`,
-            });
-            if (data.code === 20000) {
-                console.log("删除成功");
-                let id = selectedTodo.id;
-                let deletedTodoList = todoList.filter((item) => item.id !== id);
+            const result = await deleteTodo(selectedTodo);
+
+            if (result) {
+                const deletedTodoList = todoList.filter((item) => item.id !== selectedTodo.id);
+                
                 setStore((prev) => ({ ...prev, todoList: deletedTodoList }));
+                
+                setHasChanged(false);
+                setShowDetail(false);
+            }
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    async function handleSubmit() {
+        try {
+            const result = await updateTodo(selectedTodo);
+            
+            if (result) {
+                const updatedTodoList = todoList.reduce((prev, cur) => {
+                    cur.id === selectedTodo.id
+                    ? prev.push(selectedTodo)
+                    : prev.push(cur);
+                    return prev;
+                }, []);
+                
+                setStore((prev) => ({ ...prev, todoList: updatedTodoList }));
+                
                 setHasChanged(false);
                 setShowDetail(false);
             }
@@ -256,39 +247,6 @@ const TodayPage = (props) => {
     function handleCancel() {
         setHasChanged(false);
         setShowDetail(false);
-    }
-
-    const [hasChanged, setHasChanged] = useState(false);
-
-    async function handleSubmit() {
-        console.log("更改后的信息如下：", selectedTodo);
-        const { date, id, ...others } = selectedTodo;
-        const payload = {
-            ...others,
-            scheId: id,
-            sTime: date && date.toJSON(),
-        };
-        try {
-            const data = await sendRequest({
-                method: "PUT",
-                url: "/schedule",
-                data: payload,
-            });
-            if (data.code === 20000) {
-                console.log("修改日程成功！");
-                let updatedTodoList = todoList.reduce((prev, cur) => {
-                    cur.id === selectedTodo.id
-                        ? prev.push(selectedTodo)
-                        : prev.push(cur);
-                    return prev;
-                }, []);
-                setStore((prev) => ({ ...prev, todoList: updatedTodoList }));
-                setHasChanged(false);
-                setShowDetail(false);
-            }
-        } catch (err) {
-            console.error(err);
-        }
     }
 
     return (
@@ -479,7 +437,7 @@ const TodayPage = (props) => {
                 </Box>
 
                 {showDetail && (
-                    <Toolbar
+                    <Card
                         id="detialcontainer"
                         sx={{
                             width: "30%",
@@ -511,7 +469,11 @@ const TodayPage = (props) => {
                                 <IconButton onClick={handleDetailCplt}>
                                     <FontAwesomeIcon
                                         size="sm"
-                                        icon={selectedTodo.isDone ? faCircleCheck : faCircleNotch}
+                                        icon={
+                                            selectedTodo.isDone
+                                                ? faCircleCheck
+                                                : faCircleNotch
+                                        }
                                         color={
                                             selectedTodo
                                                 ? "rgb(255, 128, 0)"
@@ -712,7 +674,7 @@ const TodayPage = (props) => {
                                 </Button>
                             )}
                         </Box>
-                    </Toolbar>
+                    </Card>
                 )}
             </Box>
 
@@ -876,7 +838,6 @@ const TodayPage = (props) => {
                         onClick={() => {
                             setOpenDialog(false);
                             handleDetialDelete();
-                            console.log("确认");
                         }}
                     >
                         确定

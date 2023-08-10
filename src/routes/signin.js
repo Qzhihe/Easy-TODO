@@ -2,7 +2,7 @@ import * as React from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { SnackbarProvider } from 'notistack';
+import { SnackbarProvider } from "notistack";
 
 import {
     Box,
@@ -16,6 +16,8 @@ import {
     CssBaseline,
 } from "@mui/material";
 
+import { doLogin } from "../api/app";
+
 const defaultTheme = createTheme();
 
 const SignInPage = () => {
@@ -27,35 +29,38 @@ const SignInPage = () => {
 
         const data = new FormData(event.currentTarget);
 
-        const name = data.get('name');
-        const pwd = data.get('password');
+        const name = data.get("name");
+        const pwd = data.get("password");
         if (!name) {
-            providerRef.current.enqueueSnackbar("用户名不能为空！", { variant: "error" });
+            providerRef.current.enqueueSnackbar("用户名不能为空！", {
+                variant: "error",
+            });
             return;
         }
         if (!pwd) {
-            providerRef.current.enqueueSnackbar("密码不能为空！", { variant: "error" });
+            providerRef.current.enqueueSnackbar("密码不能为空！", {
+                variant: "error",
+            });
             return;
         }
 
         try {
-            const result = await axios({
-                url: `${process.env.REACT_APP_API_URL}/user/login`,
-                method: "post",
-                data: {
-                    username: data.get("email"),
-                    password: data.get("password"),
-                },
-            });
-
-            console.log(result);
+            const result = await doLogin(name, pwd);
 
             if (result.data.code === 20000) {
                 localStorage.setItem("authToken", result.data.data.token);
                 navigate("/views/today", { replace: true });
+            } else {
+                providerRef.current.enqueueSnackbar("密码或账号错误", {
+                    anchorOrigin: { vertical: "right", horizontal: "top" },
+                    variant: "error",
+                });
             }
         } catch (err) {
-            providerRef.current.enqueueSnackbar("登陆失败，请重试！", { variant: "error" });
+            providerRef.current.enqueueSnackbar("登陆失败，请重试！", {
+                anchorOrigin: { vertical: "right", horizontal: "top" },
+                variant: "error",
+            });
         }
     }
 

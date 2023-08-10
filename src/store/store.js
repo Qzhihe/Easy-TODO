@@ -1,6 +1,10 @@
 import { useState, createContext } from "react";
 
 const initialStore = {
+    user: {
+        id: "",
+        
+    },
     todoList: [],
 };
 
