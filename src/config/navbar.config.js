@@ -19,5 +19,5 @@ const NavItems = [
 export default NavItems;
 
 export const getActiveNavId = (routePath) => {
-    return NavItems.filter((item) => item.to === routePath)[0].id;
+    return NavItems.filter((item) => item.to === routePath)[0]?.id;
 };
