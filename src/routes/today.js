@@ -114,6 +114,11 @@ const TodayPage = (props) => {
                 method: "POST",
                 url: "/schedule",
                 data: payload,
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem(
+                        "authToken"
+                    )}`,
+                },
             });
 
             const currentList = [{ ...todo, id }, ...todoList];
@@ -273,6 +278,11 @@ const TodayPage = (props) => {
                 method: "PUT",
                 url: "/schedule",
                 data: payload,
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem(
+                        "authToken"
+                    )}`,
+                },
             });
             if (data.code === 20000) {
                 console.log("修改日程成功！");
