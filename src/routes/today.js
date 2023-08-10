@@ -12,7 +12,6 @@ import {
     Typography,
     IconButton,
     Tooltip,
-    Toolbar,
     Button,
     TextareaAutosize,
     Dialog,
@@ -211,10 +210,12 @@ const TodayPage = (props) => {
             const result = await deleteTodo(selectedTodo);
 
             if (result) {
-                const deletedTodoList = todoList.filter((item) => item.id !== selectedTodo.id);
-                
+                const deletedTodoList = todoList.filter(
+                    (item) => item.id !== selectedTodo.id
+                );
+
                 setStore((prev) => ({ ...prev, todoList: deletedTodoList }));
-                
+
                 setHasChanged(false);
                 setShowDetail(false);
             }
@@ -226,17 +227,17 @@ const TodayPage = (props) => {
     async function handleSubmit() {
         try {
             const result = await updateTodo(selectedTodo);
-            
+
             if (result) {
                 const updatedTodoList = todoList.reduce((prev, cur) => {
                     cur.id === selectedTodo.id
-                    ? prev.push(selectedTodo)
-                    : prev.push(cur);
+                        ? prev.push(selectedTodo)
+                        : prev.push(cur);
                     return prev;
                 }, []);
-                
+
                 setStore((prev) => ({ ...prev, todoList: updatedTodoList }));
-                
+
                 setHasChanged(false);
                 setShowDetail(false);
             }
@@ -439,18 +440,18 @@ const TodayPage = (props) => {
 
                 {showDetail && (
                     <Slide direction="left" in>
-                    <Card
-                        id="detialcontainer"
-                        sx={{
-                            width: "30%",
-                            height: "100%",
-                            backgroundColor: "rgb(255, 255, 255)",
-                            display: "flex",
-                            flexFlow: "column nowrap",
-                        }}
-                    >
-                        <Box
-                            id="detial"
+                        <Card
+                            id="detialcontainer"
+                            sx={{
+                                width: "30%",
+                                height: "100%",
+                                backgroundColor: "rgb(255, 255, 255)",
+                                display: "flex",
+                                flexFlow: "column nowrap",
+                            }}
+                        >
+                            <Box
+                                id="detial"
                                 sx={{
                                     width: "100%",
                                     height: "4rem",
@@ -460,6 +461,7 @@ const TodayPage = (props) => {
                                     justifyContent: "space-between",
                                     gap: "10px",
                                 }}
+                            >
                                 <Tooltip
                                     title={
                                         selectedTodo && selectedTodo.isDone
@@ -470,7 +472,11 @@ const TodayPage = (props) => {
                                     <IconButton onClick={handleDetailCplt}>
                                         <FontAwesomeIcon
                                             size="sm"
-                                            icon={selectedTodo.isDone ? faCircleCheck : faCircleNotch}
+                                            icon={
+                                                selectedTodo.isDone
+                                                    ? faCircleCheck
+                                                    : faCircleNotch
+                                            }
                                             color={
                                                 selectedTodo
                                                     ? "rgb(255, 128, 0)"
@@ -491,10 +497,11 @@ const TodayPage = (props) => {
                                             size="sm"
                                             icon={faCalendarDays}
                                             color={
-                                                selectedTodo && selectedTodo.date
+                                                selectedTodo &&
+                                                selectedTodo.date
                                                     ? getCalendarDate(
-                                                        selectedTodo.date
-                                                    ) === "过期"
+                                                          selectedTodo.date
+                                                      ) === "过期"
                                                         ? "rgb(224, 49, 48)"
                                                         : "rgb(71, 114, 249)"
                                                     : "rgb(162, 162, 162)"
@@ -519,9 +526,9 @@ const TodayPage = (props) => {
                                             color={
                                                 selectedTodo
                                                     ? `rgb(${getPriorityProp(
-                                                        selectedTodo.priority,
-                                                        "color"
-                                                    )})`
+                                                          selectedTodo.priority,
+                                                          "color"
+                                                      )})`
                                                     : "rgb(162, 162, 162)"
                                             }
                                         />
@@ -619,7 +626,9 @@ const TodayPage = (props) => {
                                         },
                                     }}
                                     value={
-                                        selectedTodo ? selectedTodo.description : ""
+                                        selectedTodo
+                                            ? selectedTodo.description
+                                            : ""
                                     }
                                     onChange={handleDetailDescChange}
                                 />

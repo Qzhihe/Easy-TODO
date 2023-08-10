@@ -10,7 +10,16 @@ export const doLogin = async (username, password) => {
         },
     });
 
-    console.log(result);
+    return result;
 };
 
-export const doLogout = () => {};
+export const doLogout = async() => {
+    let token = localStorage.getItem('authToken');
+    const result = await sendRequest({
+        method: 'POST',
+        url: '/user/logout',
+        headers: {'X-Token': token,}
+    });
+
+    return result;
+};
