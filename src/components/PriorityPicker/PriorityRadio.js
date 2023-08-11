@@ -1,8 +1,10 @@
+import { Fragment } from "react";
+import { Box, Tooltip } from "@mui/material";
+
 import { faFlag } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Box, Tooltip } from "@mui/material";
-import { Fragment } from "react";
-import { getPriorityProp } from "../utils/priority";
+
+import { getPriorityProp } from "../../utils/priority";
 
 const PriorityRadio = ({ priority, active }) => {
     const styles = {};

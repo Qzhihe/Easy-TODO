@@ -2,27 +2,29 @@ import dayjs from "dayjs";
 import styled from "styled-components";
 import localizedFormat from "dayjs/plugin/localizedFormat";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Fragment, useContext, useEffect, useState } from "react";
+import {
+    useMemo,
+    useState,
+    Fragment,
+    useEffect,
+    useContext,
+    useCallback,
+} from "react";
 
 import {
     Box,
-    Menu,
     Card,
-    Divider,
-    Typography,
-    IconButton,
-    Tooltip,
-    Button,
-    TextareaAutosize,
+    Slide,
     Dialog,
+    Button,
+    Tooltip,
+    Divider,
+    IconButton,
+    Typography,
     DialogTitle,
     DialogActions,
-    Slide,
+    TextareaAutosize,
 } from "@mui/material";
-
-import { DateCalendar } from "@mui/x-date-pickers/DateCalendar";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 
 import {
     faPlus,
@@ -33,15 +35,18 @@ import {
     faChevronDown,
     faCalendarDays,
 } from "@fortawesome/free-solid-svg-icons";
-
 import { faSun } from "@fortawesome/free-regular-svg-icons";
 
-import { StoreContext } from "../store/store";
 import TodoList from "../components/TodoList";
-import { getPriorityProp } from "../utils/priority";
-import { getCalendarDate } from "../utils/date";
+import CalendarPicker from "../components/CalendarPicker";
+import PriorityPicker from "../components/PriorityPicker";
+
 import { sendRequest } from "../utils/request";
-import PriorityRadio from "../components/PriorityRadio";
+import { getCalendarDate } from "../utils/date";
+import { getPriorityProp } from "../utils/priority";
+
+import { StoreContext } from "../store/store";
+
 import { addTodo, deleteTodo, getTodoList, updateTodo } from "../api/todo";
 import { getUserInfo } from "../api/app";
 
@@ -60,23 +65,63 @@ const defaultNextTodo = {
 const TodayPage = (props) => {
     const { store, setStore } = useContext(StoreContext);
 
-    // const [nightTheme, setChangeTheme] = useState(false);
     const [hasChanged, setHasChanged] = useState(false);
     const [openDialog, setOpenDialog] = useState(false);
     const [showDetail, setShowDetail] = useState(false);
     const [cpltIcon, setCpltIcon] = useState(faCircleNotch);
     const [nextTodo, setNextTodo] = useState(defaultNextTodo);
-    const [dateMenuAnchor, setDateMenuAnchor] = useState(null);
-    const [deDateMenuAnchor, setDeDateMenuAnchor] = useState(null);
     const [selectedTodo, setSelectedTodo] = useState(defaultNextTodo);
-    const [priorityMenuAnchor, setPriorityMenuAnchor] = useState(null);
-    const [dePriorityMenuAnchor, setDePriorityMenuAnchor] = useState(null);
+    // CalendarPicker
+    const [calendarPickerData, setCalendarPickerData] = useState(null);
+    const [calendarPickerAnchor, setCalendarPickerAnchor] = useState(null);
+    // PriorityPicker
+    const [priorityPickerData, setPriorityPickerData] = useState(null);
+    const [priorityPickerAnchor, setPriorityPickerAnchor] = useState(null);
 
-    // let themeIcon = nightTheme ? faMoon : faSun;
+    // PriorityPicker
+    const priorityMenuData = useMemo(
+        () => ({
+            anchorEl: priorityPickerAnchor,
+            open: !!priorityPickerAnchor,
+            onClick: handlePriorityPickerShut,
+            onClose: handlePriorityPickerShut,
+        }),
+        [priorityPickerAnchor]
+    );
+
+    const handlePriorityChange = useCallback(
+        (priority) => {
+            priorityPickerData.setter({
+                ...priorityPickerData.state,
+                priority,
+            });
+        },
+        [priorityPickerData]
+    );
+
+    // CalendarPicker
+    const calendarMenuData = useMemo(
+        () => ({
+            anchorEl: calendarPickerAnchor,
+            open: !!calendarPickerAnchor,
+            onClose: handleCalendarPickerShut,
+        }),
+        [calendarPickerAnchor]
+    );
+
+    const handleCalendarChange = useCallback(
+        (date, status) => {
+            if (status === "finish") {
+                handleCalendarPickerShut();
+            }
+            calendarPickerData.setter({ ...calendarPickerData.state, date });
+        },
+        [calendarPickerData]
+    );
+
     const todoList = store.todoList;
-    const undoneList = todoList.filter((item) => !item.isDone);
     const doneList = todoList.filter((item) => item.isDone);
-    // function getTodos() {}
+    const undoneList = todoList.filter((item) => !item.isDone);
 
     useEffect(() => {
         (async () => {
@@ -104,25 +149,32 @@ const TodayPage = (props) => {
         })(); 
     }, [setStore]);
 
-    // TODO: 主题更换
-    // function changeTheme() {
-    //     setChangeTheme(!nightTheme);
-    // }
-
     function handleTitleChange(ev) {
         setNextTodo({ ...nextTodo, title: ev.target.value });
     }
 
-    function handlePriorityChange(ev) {
-        const priority = parseInt(ev.target.getAttribute("data-priority"));
-        setNextTodo({ ...nextTodo, priority });
+    // PriorityPicker
+    function handlePriorityPickerOpen(state, setter) {
+        return (ev) => {
+            setPriorityPickerAnchor(ev.target);
+            setPriorityPickerData({ state, setter });
+        };
     }
 
-    function handleCalendarChange(date, state) {
-        if (state === "finish") {
-            setDateMenuAnchor(null);
-        }
-        setNextTodo({ ...nextTodo, date });
+    function handlePriorityPickerShut() {
+        setPriorityPickerAnchor(null);
+    }
+
+    // CalendarPicker
+    function handleCalendarPickOpen(state, setter) {
+        return (ev) => {
+            setCalendarPickerAnchor(ev.target);
+            setCalendarPickerData({ state, setter });
+        };
+    }
+
+    function handleCalendarPickerShut() {
+        setCalendarPickerAnchor(null);
     }
 
     async function handleInputEnter(ev) {
@@ -191,28 +243,6 @@ const TodayPage = (props) => {
         setSelectedTodo({ ...selectedTodo, isDone: !selectedTodo.isDone });
         setCpltIcon(cpltIcon === faCircleCheck ? faCircleNotch : faCircleCheck);
         setHasChanged(true);
-    }
-
-    function handleDetailDate(event) {
-        setDeDateMenuAnchor(event.target);
-    }
-
-    function handleDeCalendarChange(date, state) {
-        if (state === "finish") {
-            setDeDateMenuAnchor(null);
-        }
-        setHasChanged(true);
-        setSelectedTodo({ ...selectedTodo, date: date });
-    }
-
-    function handleDetailPri(event) {
-        setDePriorityMenuAnchor(event.target);
-    }
-
-    function handleDePriorityChange(ev) {
-        const priority = parseInt(ev.target.getAttribute("data-priority"));
-        setHasChanged(true);
-        setSelectedTodo({ ...selectedTodo, priority });
     }
 
     function makeConfirm() {
@@ -342,7 +372,6 @@ const TodayPage = (props) => {
                         <Box
                             sx={{
                                 display: "flex",
-
                                 justifyContent: "center",
                                 alignItems: "center",
                                 height: "3.5rem",
@@ -385,9 +414,10 @@ const TodayPage = (props) => {
                                         }
                                     >
                                         <IconButton
-                                            onClick={(ev) =>
-                                                setPriorityMenuAnchor(ev.target)
-                                            }
+                                            onClick={handlePriorityPickerOpen(
+                                                nextTodo,
+                                                setNextTodo
+                                            )}
                                         >
                                             <FontAwesomeIcon
                                                 size="2xs"
@@ -396,6 +426,9 @@ const TodayPage = (props) => {
                                                     nextTodo.priority,
                                                     "color"
                                                 )})`}
+                                                style={{
+                                                    pointerEvents: "none",
+                                                }}
                                             />
                                         </IconButton>
                                     </Tooltip>
@@ -408,9 +441,10 @@ const TodayPage = (props) => {
                                         }
                                     >
                                         <IconButton
-                                            onClick={(ev) =>
-                                                setDateMenuAnchor(ev.target)
-                                            }
+                                            onClick={handleCalendarPickOpen(
+                                                nextTodo,
+                                                setNextTodo
+                                            )}
                                         >
                                             <FontAwesomeIcon
                                                 size="2xs"
@@ -506,7 +540,12 @@ const TodayPage = (props) => {
                                         getCalendarDate(selectedTodo.date)
                                     }
                                 >
-                                    <IconButton onClick={handleDetailDate}>
+                                    <IconButton
+                                        onClick={handleCalendarPickOpen(
+                                            selectedTodo,
+                                            setSelectedTodo
+                                        )}
+                                    >
                                         <FontAwesomeIcon
                                             size="sm"
                                             icon={faCalendarDays}
@@ -533,7 +572,12 @@ const TodayPage = (props) => {
                                         )
                                     }
                                 >
-                                    <IconButton onClick={handleDetailPri}>
+                                    <IconButton
+                                        onClick={handlePriorityPickerOpen(
+                                            selectedTodo,
+                                            setSelectedTodo
+                                        )}
+                                    >
                                         <FontAwesomeIcon
                                             size="sm"
                                             icon={faFlag}
@@ -699,151 +743,17 @@ const TodayPage = (props) => {
                 )}
             </Box>
 
-            <Menu
-                anchorEl={priorityMenuAnchor}
-                open={!!priorityMenuAnchor}
-                onClick={() => setPriorityMenuAnchor(null)}
-                onClose={() => setPriorityMenuAnchor(null)}
-                MenuListProps={{
-                    disablePadding: true,
-                    sx: {
-                        padding: "1rem",
-                    },
-                }}
-            >
-                <Box component="li">
-                    <Typography
-                        paragraph
-                        sx={{
-                            fontSize: "0.8rem",
-                            color: "rgba(0, 0, 0, 0.3)",
-                        }}
-                    >
-                        优先级
-                    </Typography>
-                    <Box
-                        component="ul"
-                        onClick={handlePriorityChange}
-                        sx={{
-                            display: "flex",
-                            gap: "0 0.75rem",
-                        }}
-                    >
-                        <PriorityRadio
-                            priority={3}
-                            active={nextTodo.priority === 3}
-                        />
-                        <PriorityRadio
-                            priority={2}
-                            active={nextTodo.priority === 2}
-                        />
-                        <PriorityRadio
-                            priority={1}
-                            active={nextTodo.priority === 1}
-                        />
-                        <PriorityRadio
-                            priority={0}
-                            active={nextTodo.priority === 0}
-                        />
-                    </Box>
-                </Box>
-            </Menu>
+            <PriorityPicker
+                selectedPriority={priorityPickerData?.state.priority}
+                handlePriorityChange={handlePriorityChange}
+                MenuData={priorityMenuData}
+            />
 
-            <Menu
-                anchorEl={dePriorityMenuAnchor}
-                open={!!dePriorityMenuAnchor}
-                onClick={() => setDePriorityMenuAnchor(null)}
-                onClose={() => setDePriorityMenuAnchor(null)}
-                MenuListProps={{
-                    disablePadding: true,
-                    sx: {
-                        padding: "1rem",
-                    },
-                }}
-            >
-                <Box component="li">
-                    <Typography
-                        paragraph
-                        sx={{
-                            fontSize: "0.8rem",
-                            color: "rgba(0, 0, 0, 0.3)",
-                        }}
-                    >
-                        优先级
-                    </Typography>
-                    <Box
-                        component="ul"
-                        onClick={handleDePriorityChange}
-                        sx={{
-                            display: "flex",
-                            gap: "0 0.75rem",
-                        }}
-                    >
-                        <PriorityRadio
-                            priority={3}
-                            active={selectedTodo.priority === 3}
-                        />
-                        <PriorityRadio
-                            priority={2}
-                            active={selectedTodo.priority === 2}
-                        />
-                        <PriorityRadio
-                            priority={1}
-                            active={selectedTodo.priority === 1}
-                        />
-                        <PriorityRadio
-                            priority={0}
-                            active={selectedTodo.priority === 0}
-                        />
-                    </Box>
-                </Box>
-            </Menu>
-
-            <Menu
-                anchorEl={dateMenuAnchor}
-                open={!!dateMenuAnchor}
-                onClose={() => setDateMenuAnchor(null)}
-                MenuListProps={{
-                    disablePadding: true,
-                    sx: {
-                        padding: "1rem",
-                    },
-                }}
-            >
-                <LocalizationProvider
-                    dateAdapter={AdapterDayjs}
-                    adapterLocale="zh-cn"
-                >
-                    <DateCalendar
-                        disablePast
-                        value={nextTodo.date}
-                        onChange={handleCalendarChange}
-                    />
-                </LocalizationProvider>
-            </Menu>
-
-            <Menu
-                anchorEl={deDateMenuAnchor}
-                open={!!deDateMenuAnchor}
-                onClose={() => setDeDateMenuAnchor(null)}
-                MenuListProps={{
-                    disablePadding: true,
-                    sx: {
-                        padding: "1rem",
-                    },
-                }}
-            >
-                <LocalizationProvider
-                    dateAdapter={AdapterDayjs}
-                    adapterLocale="zh-cn"
-                >
-                    <DateCalendar
-                        disablePast
-                        value={selectedTodo.date}
-                        onChange={handleDeCalendarChange}
-                    />
-                </LocalizationProvider>
-            </Menu>
+            <CalendarPicker
+                selectedDate={calendarPickerData?.state.date}
+                handleCalendarChange={handleCalendarChange}
+                MenuData={calendarMenuData}
+            />
 
             <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
                 <DialogTitle>确定要删除该日程吗？</DialogTitle>
