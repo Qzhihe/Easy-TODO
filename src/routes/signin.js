@@ -1,7 +1,7 @@
 import * as React from "react";
+import { SnackbarProvider } from "notistack";
 import { useNavigate } from "react-router-dom";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { SnackbarProvider } from "notistack";
 
 import {
     Box,

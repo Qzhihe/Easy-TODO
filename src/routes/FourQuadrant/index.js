@@ -8,7 +8,9 @@ import { faFlag } from "@fortawesome/free-solid-svg-icons";
 import { getPriorityProp } from "../../utils/priority";
 
 import "./index.css";
+
 import TodoList from "../../components/TodoList";
+
 import { StoreContext } from "../../store/store";
 
 const FourQuadrant = () => {
