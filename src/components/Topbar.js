@@ -11,18 +11,25 @@ import {
     List,
     ListItem,
     ListItemButton,
+    Menu,
+    Typography,
 } from "@mui/material";
 
-import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
+import {
+    faMagnifyingGlass,
+} from "@fortawesome/free-solid-svg-icons";
 import { StoreContext } from "../store/store";
 import { sendRequest } from "../utils/request";
 import dayjs from "dayjs";
+import { doLogout } from "../api/app";
+import { Box } from "@mui/system";
 
 const Topbar = (props) => {
-    const defaultSearch = [{title: "搜索结果", id: '0'}];
+    const defaultSearch = [{ title: "搜索结果", id: "0" }];
     const [open, setOpen] = useState(false);
     const [search, setSearch] = useState("");
     const [searchList, setSearchList] = useState(defaultSearch);
+    const [logoutOpen, setLogoutOpen] = useState(null);
 
     const { store, setStore } = useContext(StoreContext);
     const todoList = store.todoList;
@@ -63,14 +70,40 @@ const Topbar = (props) => {
     }
 
     function handleEnter(event) {
-        if (event.key === 'Enter' && search !== '') {
+        if (event.key === "Enter" && search !== "") {
             console.log(todoList);
 
             setSearchList(
-                todoList.filter((item) => item.title.includes(search) || item.description.includes(search))
+                todoList.filter(
+                    (item) =>
+                        item.title.includes(search) ||
+                        item.description.includes(search)
+                )
             );
-        } else if (event.key === 'Enter' && search === '') {
+        } else if (event.key === "Enter" && search === "") {
             setSearchList(defaultSearch);
+        }
+    }
+
+    function handleAvatarClick(event) {
+        event.preventDefault();
+        setLogoutOpen(event.target);
+    }
+
+    async function userLogOut() {
+        try {
+            const result = await doLogout();
+            console.log(result);
+            if (result.code === 20000) {
+                localStorage.removeItem("authToken", "authName");
+                setLogoutOpen(false);
+                window.location.reload(); // 强制的原因是这里的重定向逻辑和配置中路由守卫逻辑冲突，但我不太明白为什么会冲突，可能没有达到组件重新渲染的条件
+            } else {
+                throw new Error("登出失败");
+            }
+        } catch (err) {
+            console.error(err);
+            setLogoutOpen(false);
         }
     }
 
@@ -100,7 +133,7 @@ const Topbar = (props) => {
                     />
                     <input type="text" onClick={handleInputClick} />
                 </div>
-                <div id="avatar"></div>
+                <div id="avatar" onContextMenu={handleAvatarClick}></div>
             </AppBar>
             <Dialog
                 open={open}
@@ -123,12 +156,43 @@ const Topbar = (props) => {
                     <List>
                         {searchList.map((item) => (
                             <ListItem key={item.id}>
-                                <ListItemButton >{item.title}{item.description ? `—${item.description}` : ''}</ListItemButton>
+                                <ListItemButton>
+                                    {item.title}
+                                    {item.description
+                                        ? `—${item.description}`
+                                        : ""}
+                                </ListItemButton>
                             </ListItem>
                         ))}
                     </List>
                 </DialogContent>
             </Dialog>
+
+            <Menu
+                anchorEl={logoutOpen}
+                open={!!logoutOpen}
+                onClose={() => {
+                    setLogoutOpen(false);
+                }}
+                MenuListProps={{
+                    disablePadding: true,
+                }}
+                autoFocus={false}
+            >
+                <Box
+                    onClick={userLogOut}
+                    sx={{
+                        cursor: "pointer",
+                        display: "flex",
+                        flexFlow: 'row nowrap',
+                        justifyContent: "center",
+                        alignItems: "center",
+                        padding: '.5rem 1rem',
+                    }}
+                >
+                    <Typography fontSize={'.825rem'}>登出</Typography>
+                </Box>
+            </Menu>
         </Fragment>
     );
 };

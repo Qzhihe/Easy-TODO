@@ -1,5 +1,4 @@
 import * as React from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { SnackbarProvider } from "notistack";
@@ -47,8 +46,9 @@ const SignInPage = () => {
         try {
             const result = await doLogin(name, pwd);
 
-            if (result.data.code === 20000) {
-                localStorage.setItem("authToken", result.data.data.token);
+            if (result.code === 20000) {
+                localStorage.setItem("authToken", result.data.token);
+                localStorage.setItem('authName', name);
                 navigate("/views/today", { replace: true });
             } else {
                 providerRef.current.enqueueSnackbar("密码或账号错误", {
@@ -57,6 +57,7 @@ const SignInPage = () => {
                 });
             }
         } catch (err) {
+            console.log(err);
             providerRef.current.enqueueSnackbar("登陆失败，请重试！", {
                 anchorOrigin: { vertical: "right", horizontal: "top" },
                 variant: "error",
