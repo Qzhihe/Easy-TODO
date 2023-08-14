@@ -33,7 +33,7 @@ export default function SignUpPage() {
     const [open, setOpen] = useState(false);
     const navigate = useNavigate();
     // 验证注册表单内容
-    const checkForm = async (data) => {
+    async function checkForm(data) {
         let email = data.get("email"),
             password = data.get("psw"),
             password1 = data.get("psw1");
@@ -75,22 +75,33 @@ export default function SignUpPage() {
             email: email, // 邮箱
             password: password, // 密码
         };
-        console.log(userInfo);
 
         try {
             const result = await doSignup(userInfo);
             if (result.code === 20000) {
-                console.log("注册成功，但好像没什么卵用");
-
-                const res = await doLogin(email, password);
-                if (res === 20000) {
-                    navigate("/views/today", { replace: true });
-                }
-            } else {
-                throw(new Error('jwt无效'));
+                autoSignIn(email, password);
+            } else if (result.code === 20002) {
+                providerRef.current.enqueueSnackbar("已有账号", {
+                    variant: "warning",
+                });
             }
         } catch (err) {
             providerRef.current.enqueueSnackbar("注册失败", {
+                variant: "warning",
+            });
+            console.error(err);
+        }
+    };
+
+    async function autoSignIn(email, password) {
+        try {
+            const res = await doLogin(email, password);
+            if (res.code === 20000) {
+                localStorage.setItem("authToken", res.data.token);
+                navigate("/views/today", { replace: true });
+            }
+        } catch (err) {
+            providerRef.current.enqueueSnackbar("自动登录失败", {
                 variant: "warning",
             });
             console.error(err);

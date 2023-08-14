@@ -1,4 +1,4 @@
-import { Fragment, useContext, useEffect, useState } from "react";
+import { Fragment, useContext, useState } from "react";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
@@ -17,8 +17,6 @@ import {
 
 import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
 import { StoreContext } from "../store/store";
-import { sendRequest } from "../utils/request";
-import dayjs from "dayjs";
 import { doLogout } from "../api/app";
 import { Box } from "@mui/system";
 
@@ -32,31 +30,6 @@ const Topbar = (props) => {
     const { store, setStore } = useContext(StoreContext);
     const todoList = store.todoList;
     const user = store.user;
-
-    useEffect(() => {
-        sendRequest({
-            url: "/schedule/all",
-            method: "GET",
-        })
-            .then(({ data }) => {
-                const currentTodoList = data.map(
-                    ({ sTime, eTime, userId, scheId, ...others }) => {
-                        return {
-                            id: scheId,
-                            date: sTime && dayjs(sTime).locale("zh-cn"),
-                            ...others,
-                        };
-                    }
-                );
-
-                currentTodoList.sort((a, b) => b.id - a.id);
-
-                setStore((prev) => ({ ...prev, todoList: currentTodoList }));
-            })
-            .catch((err) => {
-                console.error(err);
-            });
-    }, [setStore]);
 
     function handleInputClick() {
         setSearch("");
@@ -94,8 +67,15 @@ const Topbar = (props) => {
             const result = await doLogout();
             if (result.code === 20000) {
                 localStorage.removeItem("authToken");
-                localStorage.removeItem("authName");
-                localStorage.removeItem("userId");
+                localStorage.removeItem("id");
+                setStore({
+                    user: {
+                        id: "",
+                        navatar: "",
+                        name: "",
+                    },
+                    todoList: [],
+                });
                 setLogoutOpen(false);
                 window.location.reload(); // 强制的原因是这里的重定向逻辑和配置中路由守卫逻辑冲突，但我不太明白为什么会冲突，可能没有达到组件重新渲染的条件
             } else {

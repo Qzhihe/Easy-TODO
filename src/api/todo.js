@@ -2,33 +2,20 @@ import dayjs from "dayjs";
 
 import { sendRequest } from "../utils/request";
 
-// export const getTodoList = async () => {
-//     let token = localStorage.getItem("authToken");
-//     const params = {
-//         'token': token,
-//     };
-
-//     try {
-//         const result = await sendRequest({
-//             method: "GET",
-//             url: "/schedule/info",
-//             params: params,
-//         });
-//         console.log(result);
-
-//         return result.data.schedule.map((todo) => formatTodoFromResponce(todo));
-//     } catch (err) {
-//         throw err;
-//     }
-// };
 export const getTodoList = async () => {
+    const params = {
+        token: localStorage.getItem('authToken'),
+    };
     try {
         const result = await sendRequest({
             method: "GET",
-            url: "/schedule/all",
+            url: "/schedule/info",
+            params: params
         });
-
-        return result.data.map((todo) => formatTodoFromResponce(todo));
+        // console.log(result);
+        // let res = result.data.schedule.map((todo) => formatTodoFromResponce(todo));
+        // console.log(res);
+        return result.data.schedule.map((todo) => formatTodoFromResponce(todo));
     } catch (err) {
         throw err;
     }
@@ -86,7 +73,7 @@ const formatTodoForRequest = (todo) => {
         scheId: id,
         sTime: date && date.toJSON(),
         alarm: alarm && alarm.toJSON(),
-        userId: localStorage.getItem('userId')
+        userId: localStorage.getItem("id"),
     };
 };
 

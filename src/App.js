@@ -18,11 +18,11 @@ import StoreProvider, { StoreContext } from "./store/store";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 
 function isValidToken() {
-    // const token = localStorage.getItem("authToken");
+    const token = localStorage.getItem("authToken");
 
-    // if (!token) {
-    //     return false;
-    // }
+    if (!token) {
+        return false;
+    }
 
     return true;
 }
@@ -37,6 +37,9 @@ const PrivateRoute = ({ element }) => {
     useEffect(() => {
         (async () => {
             try {
+                if (!localStorage.getItem("authToken")) {
+                    return;
+                }
                 const result = await getTodoList();
 
                 result.sort((a, b) => b.id - a.id);
@@ -50,12 +53,12 @@ const PrivateRoute = ({ element }) => {
             try {
                 const result = await getUserInfo();
                 if (result.code === 20000) {
-                    console.log(result.data);
                     let updateUser = {
                         id: result.data.id,
                         avatar: result.data.avatar,
                         name: result.data.name,
                     };
+                    localStorage.setItem("id", result.data.id);
                     setStore((prev) => ({ ...prev, user: updateUser }));
                 } else {
                     throw new Error("用户信息拿取失败！");

@@ -20,7 +20,7 @@ const TodoList = memo((props) => {
             >
                 {data.map(item => {
                     return (
-                        <Fragment key={item.id}>
+                        <Fragment key={item?.id}>
                             <TodoItem
                                 data={item}
                                 onHandleSelectTodo={onHandleSelectTodo}
