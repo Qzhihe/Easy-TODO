@@ -1,17 +1,10 @@
-import { Fragment, useRef, useContext } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-
-import { Card, Typography } from "@mui/material";
-
-import { faFlag } from "@fortawesome/free-solid-svg-icons";
-
-import { getPriorityProp } from "../../utils/priority";
-
-import "./index.css";
-
-import TodoList from "../../components/TodoList";
-
 import { StoreContext } from "../../store/store";
+import { Card, Typography } from "@mui/material";
+import TodoList from "../../components/TodoList";
+import { Fragment, useRef, useContext } from "react";
+import { getPriorityProp } from "../../utils/priority";
+import { faFlag } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { sendRequest } from "../../utils/request";
 
 const FourQuadrant = () => {
@@ -31,17 +24,7 @@ const FourQuadrant = () => {
 
     return (
         <Fragment>
-            <div
-                style={{
-                    display: "grid",
-                    gridTemplate: "1fr 1fr / 1fr 1fr",
-                    placeItems: "center",
-                    gap: "1rem",
-                    height: "100%",
-                    padding: "1.5rem",
-                    overflow: "hidden",
-                }}
-            >
+            <div className="grid grid-rows-2 grid-cols-2 place-items-center gap-4 p-6 overflow-hidden h-full">
                 <Quadrant priority={3} data={getTodosByPriority(3)} />
                 <Quadrant priority={2} data={getTodosByPriority(2)} />
                 <Quadrant priority={1} data={getTodosByPriority(1)} />
@@ -108,36 +91,15 @@ const Quadrant = (props) => {
                     height: "100%",
                 }}
             >
-                <div className="quadrant">
-                    <div
-                        style={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: "1rem",
-                            height: "1.25rem",
-                        }}
-                    >
+                <div className="flex flex-col gap-4 w-full p-4 bg-[#fafafa]">
+                    <div className="flex items-center gap-4 h-5">
                         <FontAwesomeIcon icon={faFlag} color={color} />
                         <Typography sx={{ color: color }}>{title}</Typography>
                     </div>
 
-                    <div
-                        style={{
-                            display: "flex",
-                            flexDirection: "column",
-                            height: "100%",
-                            overflow: "auto",
-                        }}
-                    >
+                    <div className="flex flex-col h-full overflow-hidden">
                         {data.length === 0 ? (
-                            <Typography
-                                sx={{
-                                    margin: "auto",
-                                    color: "rgba(0, 0, 0, 0.4)",
-                                }}
-                            >
-                                没有任务
-                            </Typography>
+                            <p className="m-auto text-zinc-400">没有任务</p>
                         ) : (
                             <TodoList data={data} onHandleCplt={handleCplt} />
                         )}

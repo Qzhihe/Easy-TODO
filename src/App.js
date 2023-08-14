@@ -1,3 +1,4 @@
+import "./index.css";
 import dayjs from "dayjs";
 import "dayjs/locale/zh-cn";
 import GlobalStyle from "./GlobalStyle";
@@ -57,13 +58,13 @@ const PrivateRoute = ({ element }) => {
                     .filter((todo) => !todo.isDone && todo.alarm)
                     .forEach((todo) => {
                         const { alarm } = todo,
-                            delta = curTime.diff(alarm, "minute", true);
-                        console.log(alarm, curTime, delta, Math.floor(delta));
-                        if (Math.floor(delta) === 0) {
-                            notify();
+                            delta = curTime.diff(alarm, "second", true);
+
+                        if (delta >= 0 && delta < 10) {
+                            notify(todo);
                         }
                     });
-            }, 60 * 1000);
+            }, 10 * 1000);
         }
 
         return () => {
@@ -71,16 +72,16 @@ const PrivateRoute = ({ element }) => {
         };
     }, [store]);
 
-    function notify() {
-        toast("上号！", {
-            position: "top-right",
-            autoClose: 5000,
-            hideProgressBar: false,
+    function notify(todo) {
+        toast(`${todo.title}`, {
+            theme: "light",
+            draggable: true,
+            autoClose: false,
             closeOnClick: true,
             pauseOnHover: true,
-            draggable: true,
             progress: undefined,
-            theme: "light",
+            position: "top-right",
+            hideProgressBar: false,
         });
     }
 

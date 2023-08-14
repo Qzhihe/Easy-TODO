@@ -31,7 +31,7 @@ import {
 import { faSun } from "@fortawesome/free-regular-svg-icons";
 
 import TodoList from "../components/TodoList";
-import TimePicker from "../components/TimePicker";
+import DTRPicker from "../components/DTRPicker";
 import PriorityPicker from "../components/PriorityPicker";
 
 import { sendRequest } from "../utils/request";
@@ -64,7 +64,7 @@ const TodayPage = (props) => {
     const [nextTodo, setNextTodo] = useState(defaultNextTodo);
     const [selectedTodo, setSelectedTodo] = useState(defaultNextTodo);
     const [priorityPickerHandler, setPriorityPickerHandler] = useState(null);
-    const [timePickerHandler, setTimePickerHandler] = useState(null);
+    const [dtrPickerHandler, setDTRPickerHandler] = useState(null);
 
     const todoList = store.todoList;
     const doneList = todoList.filter((item) => item.isDone);
@@ -116,11 +116,10 @@ const TodayPage = (props) => {
         setter({ ...state, priority });
     }
 
-    // TimePicker
-    function handleTimePickerOpen(state, setter) {
-        // Notification.requestPermission();
+    // DTRPicker
+    function handleDTRPickerOpen(state, setter) {
         return (ev) => {
-            setTimePickerHandler({
+            setDTRPickerHandler({
                 state: { ...state },
                 setter,
                 anchor: ev.target,
@@ -128,35 +127,45 @@ const TodayPage = (props) => {
         };
     }
 
-    function handleTimePickerShut() {
-        setTimePickerHandler(null);
+    function handleDTRPickerClose(oldValue) {
+        const { setter } = dtrPickerHandler;
+
+        setter({ ...oldValue });
+        setDTRPickerHandler(null);
     }
 
-    function handleTimePickerCommit() {
-        const { state, setter } = timePickerHandler;
-        setter({ ...state });
+    function handleDTRPickerCommit() {
+        setDTRPickerHandler(null);
     }
 
-    function handleCalendarChange(date, status) {
-        const { state } = timePickerHandler;
-        setTimePickerHandler({
-            ...timePickerHandler,
-            state: { ...state, date },
+    function handleDateTimeChange(newValue) {
+        const { state, setter } = dtrPickerHandler,
+            { date, alarm } = newValue;
+
+        setter({ ...state, date, alarm });
+        setDTRPickerHandler({
+            ...dtrPickerHandler,
+            state: { ...state, date, alarm },
         });
     }
 
-    function handleReminderChange(alarm) {
-        const { state } = timePickerHandler;
-        setTimePickerHandler({
-            ...timePickerHandler,
+    function handleReminderChange(newValue) {
+        const { state, setter } = dtrPickerHandler,
+            alarm = newValue;
+
+        setter({ ...state, alarm });
+        setDTRPickerHandler({
+            ...dtrPickerHandler,
             state: { ...state, alarm },
         });
     }
 
-    function handleTimePickerReset() {
-        const { state } = timePickerHandler;
-        setTimePickerHandler({
-            ...timePickerHandler,
+    function handleDTRPickerReset() {
+        const { state, setter } = dtrPickerHandler;
+
+        setter({ ...state, date: null, alarm: null });
+        setDTRPickerHandler({
+            ...dtrPickerHandler,
             state: { ...state, date: null, alarm: null },
         });
     }
@@ -419,7 +428,7 @@ const TodayPage = (props) => {
                                         }
                                     >
                                         <IconButton
-                                            onClick={handleTimePickerOpen(
+                                            onClick={handleDTRPickerOpen(
                                                 nextTodo,
                                                 setNextTodo
                                             )}
@@ -440,8 +449,8 @@ const TodayPage = (props) => {
                         </Box>
                     </Card>
 
-                    <div
-                        style={{
+                    <Box
+                        sx={{
                             display: "flex",
                             flexFlow: "column nowrap",
                             gap: "1rem",
@@ -461,19 +470,19 @@ const TodayPage = (props) => {
                             onHandleSelectTodo={handleSelectTodo}
                             onHandleCplt={handleCplt}
                         />
-                    </div>
+                    </Box>
                 </Box>
 
                 {showDetail && (
                     <Slide direction="left" in>
                         <Card
                             id="detialcontainer"
+                            className="flex flex-col"
                             sx={{
                                 width: "30%",
                                 height: "100%",
+                                padding: "1rem",
                                 backgroundColor: "rgb(255, 255, 255)",
-                                display: "flex",
-                                flexFlow: "column nowrap",
                             }}
                         >
                             <Box
@@ -481,7 +490,6 @@ const TodayPage = (props) => {
                                 sx={{
                                     width: "100%",
                                     height: "4rem",
-                                    padding: "0 12px",
                                     display: "flex",
                                     alignItems: "center",
                                     justifyContent: "space-between",
@@ -519,7 +527,7 @@ const TodayPage = (props) => {
                                     }
                                 >
                                     <IconButton
-                                        onClick={handleTimePickerOpen(
+                                        onClick={handleDTRPickerOpen(
                                             selectedTodo,
                                             setSelectedTodo
                                         )}
@@ -589,13 +597,12 @@ const TodayPage = (props) => {
                             <Box
                                 id="title"
                                 sx={{
+                                    display: "flex",
+                                    justifyContent: "start",
+                                    alignItems: "center",
+                                    gap: "10px",
                                     width: "100%",
                                     height: "4rem",
-                                    padding: "0 12px",
-                                    display: "flex",
-                                    alignItems: "center",
-                                    justifyContent: "start",
-                                    gap: "10px",
                                 }}
                             >
                                 <Input
@@ -611,11 +618,11 @@ const TodayPage = (props) => {
                             <Box
                                 id="description"
                                 sx={{
-                                    width: "100%",
-                                    maxHeight: "60%",
                                     display: "flex",
                                     justifyContent: "start",
                                     gap: "10px",
+                                    width: "100%",
+                                    maxHeight: "60%",
                                 }}
                             >
                                 <TextareaAutosize
@@ -701,15 +708,15 @@ const TodayPage = (props) => {
                 />
             )}
 
-            {timePickerHandler && (
-                <TimePicker
-                    anchorEl={timePickerHandler.anchor}
-                    open={!!timePickerHandler}
-                    value={timePickerHandler.state}
-                    onClose={handleTimePickerShut}
-                    onReset={handleTimePickerReset}
-                    onCommit={handleTimePickerCommit}
-                    onDateTimeChange={handleCalendarChange}
+            {dtrPickerHandler && (
+                <DTRPicker
+                    anchorEl={dtrPickerHandler.anchor}
+                    open={!!dtrPickerHandler}
+                    value={dtrPickerHandler.state}
+                    onClose={handleDTRPickerClose}
+                    onReset={handleDTRPickerReset}
+                    onCommit={handleDTRPickerCommit}
+                    onDateTimeChange={handleDateTimeChange}
                     onReminderChange={handleReminderChange}
                 />
             )}

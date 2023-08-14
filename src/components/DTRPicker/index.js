@@ -1,10 +1,10 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { Box, Menu, Select, MenuItem, Button } from "@mui/material";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 
-const TimePicker = (props) => {
+const DTRPicker = (props) => {
     const {
         value,
         onReset,
@@ -15,23 +15,23 @@ const TimePicker = (props) => {
         ...others
     } = props;
 
-    const { date, alarm } = value;
-    let initReminder = null;
+    const snapshot = useRef(value);
 
-    if (date && alarm) {
-        initReminder = `${date.diff(alarm, "minute")}`;
-    }
+    const { date, alarm } = value;
+    const initReminder =
+        snapshot.current && snapshot.current.date && snapshot.current.alarm
+            ? date.diff(alarm, "minute")
+            : null;
 
     const [reminder, setReminder] = useState(initReminder ?? "");
 
     // handlers
     function handleClose() {
-        onClose();
+        onClose(snapshot.current);
     }
 
     function handleCommit() {
         onCommit();
-        onClose();
     }
 
     function handleReset() {
@@ -40,8 +40,13 @@ const TimePicker = (props) => {
     }
 
     function handleDateTimeChange(newValue) {
-        newValue = newValue.locale("zh-cn");
-        onDateTimeChange(newValue);
+        const date = newValue.locale("zh-cn"),
+            alarm =
+                reminder === ""
+                    ? null
+                    : newValue.subtract(reminder, "minute").locale("zh-cn");
+
+        onDateTimeChange({ date, alarm });
     }
 
     function handleReminderChange(ev) {
@@ -72,22 +77,20 @@ const TimePicker = (props) => {
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                     <DateTimePicker
                         disablePast
+                        value={date}
                         ampm={false}
                         label="设置时间"
-                        value={date}
+                        format="YYYY-MM-DD hh:mm"
                         onChange={handleDateTimeChange}
                     />
                 </LocalizationProvider>
             </li>
-            <p
-                style={{
-                    fontSize: "0.8rem",
-                    color: "rgba(0, 0, 0, 0.3)",
-                }}
+            <p className="text-sm text-zinc-400">设置提醒</p>
+            <Select
+                displayEmpty
+                value={reminder}
+                onChange={handleReminderChange}
             >
-                设置提醒
-            </p>
-            <Select value={reminder} onChange={handleReminderChange} displayEmpty>
                 <MenuItem value="" sx={{ fontSize: "0.75rem" }}>
                     无
                 </MenuItem>
@@ -110,4 +113,4 @@ const TimePicker = (props) => {
     );
 };
 
-export default TimePicker;
+export default DTRPicker;
