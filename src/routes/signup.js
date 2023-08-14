@@ -14,7 +14,7 @@ import { SnackbarProvider } from "notistack";
 import { Dialog } from "@mui/material";
 import { Input } from "@mui/base";
 import { doLogin, doSignup } from "../api/app";
-import { redirect, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const defaultTheme = createTheme();
 
@@ -23,12 +23,11 @@ export default function SignUpPage() {
         avatar: "",
         deleted: 0,
         email: "",
-        // id: 0,
-        password: "string",
-        phone: "string",
+        password: "",
+        phone: "",
         roleIdList: [0],
-        status: 0,
-        username: "string",
+        status: 1,
+        username: "",
     };
     const providerRef = useRef();
     const [open, setOpen] = useState(false);
@@ -81,7 +80,7 @@ export default function SignUpPage() {
         try {
             const result = await doSignup(userInfo);
             if (result.code === 20000) {
-                console.log("注册成功，但没什么卵用，根本不能登录");
+                console.log("注册成功，但好像没什么卵用");
                 
                 const res = await doLogin(email, password);
                 if (res === 20000) {
@@ -171,7 +170,7 @@ export default function SignUpPage() {
                                         name="psw1"
                                         label="重复密码 - 与密码一致"
                                         type="password"
-                                        id="psw"
+                                        id="psw1"
                                         autoComplete="new-password"
                                     />
                                 </Grid>

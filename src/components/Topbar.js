@@ -33,6 +33,7 @@ const Topbar = (props) => {
 
     const { store, setStore } = useContext(StoreContext);
     const todoList = store.todoList;
+    const user = store.user;
 
     useEffect(() => {
         sendRequest({
@@ -93,7 +94,6 @@ const Topbar = (props) => {
     async function userLogOut() {
         try {
             const result = await doLogout();
-            console.log(result);
             if (result.code === 20000) {
                 localStorage.removeItem("authToken");
                 localStorage.removeItem("authName");
@@ -135,8 +135,9 @@ const Topbar = (props) => {
                     />
                     <input type="text" onClick={handleInputClick} />
                 </div>
-                <div id="avatar" onContextMenu={handleAvatarClick}></div>
+                <Awa avatar={user?.avatar} onContextMenu={handleAvatarClick}></Awa>
             </AppBar>
+
             <Dialog
                 open={open}
                 onClose={() => {
@@ -251,4 +252,18 @@ const AppBar = styled(MuiAppBar)`
 
         background-color: white;
     }
+`;
+
+const Awa = styled('div')`
+    justify-self: end;
+
+    width: 2.5rem;
+    height: 2.5rem;
+
+    border-radius: 50%;
+
+    background-color: white;
+    background-image: ${(props) => `url(${props?.avatar})`};
+    background-size: cover; 
+    background-position: center;
 `;
