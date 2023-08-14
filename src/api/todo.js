@@ -21,18 +21,6 @@ import { sendRequest } from "../utils/request";
 //         throw err;
 //     }
 // };
-export const getTodoList = async () => {
-    try {
-        const result = await sendRequest({
-            method: "GET",
-            url: "/schedule/all",
-        });
-
-        return result.data.map((todo) => formatTodoFromResponce(todo));
-    } catch (err) {
-        throw err;
-    }
-};
 
 export const addTodo = async (todo) => {
     try {

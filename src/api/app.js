@@ -3,7 +3,7 @@ import { sendRequest } from "../utils/request";
 export const doSignup = async (data) => {
     const result = await sendRequest({
         method: "POST",
-        url: "/user/register",
+        url: "/register/register",
         data: data,
     });
     console.log(result);

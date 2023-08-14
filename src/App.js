@@ -18,11 +18,11 @@ import StoreProvider, { StoreContext } from "./store/store";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 
 function isValidToken() {
-    // const token = localStorage.getItem("authToken");
+    const token = localStorage.getItem("authToken");
 
-    // if (!token) {
-    //     return false;
-    // }
+    if (!token) {
+        return false;
+    }
 
     return true;
 }
