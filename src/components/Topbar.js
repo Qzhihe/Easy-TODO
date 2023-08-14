@@ -15,9 +15,7 @@ import {
     Typography,
 } from "@mui/material";
 
-import {
-    faMagnifyingGlass,
-} from "@fortawesome/free-solid-svg-icons";
+import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
 import { StoreContext } from "../store/store";
 import { sendRequest } from "../utils/request";
 import dayjs from "dayjs";
@@ -135,7 +133,10 @@ const Topbar = (props) => {
                     />
                     <input type="text" onClick={handleInputClick} />
                 </div>
-                <Awa avatar={user?.avatar} onContextMenu={handleAvatarClick}></Awa>
+                <Awa
+                    avatar={user?.avatar}
+                    onContextMenu={handleAvatarClick}
+                ></Awa>
             </AppBar>
 
             <Dialog
@@ -187,13 +188,13 @@ const Topbar = (props) => {
                     sx={{
                         cursor: "pointer",
                         display: "flex",
-                        flexFlow: 'row nowrap',
+                        flexFlow: "row nowrap",
                         justifyContent: "center",
                         alignItems: "center",
-                        padding: '.5rem 1rem',
+                        padding: ".5rem 1rem",
                     }}
                 >
-                    <Typography fontSize={'.825rem'}>登出</Typography>
+                    <Typography fontSize={".825rem"}>登出</Typography>
                 </Box>
             </Menu>
         </Fragment>
@@ -254,7 +255,7 @@ const AppBar = styled(MuiAppBar)`
     }
 `;
 
-const Awa = styled('div')`
+const Awa = styled("div")`
     justify-self: end;
 
     width: 2.5rem;
@@ -264,6 +265,6 @@ const Awa = styled('div')`
 
     background-color: white;
     background-image: ${(props) => `url(${props?.avatar})`};
-    background-size: cover; 
+    background-size: cover;
     background-position: center;
 `;

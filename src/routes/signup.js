@@ -81,11 +81,13 @@ export default function SignUpPage() {
             const result = await doSignup(userInfo);
             if (result.code === 20000) {
                 console.log("注册成功，但好像没什么卵用");
-                
+
                 const res = await doLogin(email, password);
                 if (res === 20000) {
                     navigate("/views/today", { replace: true });
                 }
+            } else {
+                throw(new Error('jwt无效'));
             }
         } catch (err) {
             providerRef.current.enqueueSnackbar("注册失败", {
@@ -206,7 +208,9 @@ export default function SignUpPage() {
                 >
                     诶嘿不好意思哦，这里还没有完成，原因是我还没学会。退出对话框的话点击一下对话框以外的任意位置就好。
                     <Input type="file" onChange={handleFileChange} />
-                    <Button onClick={handleUpload}>更新</Button>
+                    <Button type="submit" onClick={handleUpload}>
+                        更新
+                    </Button>
                 </Dialog>
             </ThemeProvider>
         </SnackbarProvider>

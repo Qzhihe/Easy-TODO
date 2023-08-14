@@ -2,8 +2,8 @@ import { sendRequest } from "../utils/request";
 
 export const doSignup = async (data) => {
     const result = await sendRequest({
-        method: 'POST',
-        url: '/user/register',
+        method: "POST",
+        url: "/user/register",
         data: data,
     });
     console.log(result);
