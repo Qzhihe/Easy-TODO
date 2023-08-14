@@ -24,28 +24,9 @@ const PriorityPicker = (props) => {
             }}
             {...others}
         >
-            <li
-                style={{
-                    display: "flex",
-                    flexFlow: "column nowrap",
-                    gap: "0.5rem 0",
-                }}
-            >
-                <p
-                    style={{
-                        fontSize: "0.8rem",
-                        color: "rgba(0, 0, 0, 0.3)",
-                    }}
-                >
-                    优先级
-                </p>
-                <ul
-                    onClick={handleClick}
-                    style={{
-                        display: "flex",
-                        gap: "0 0.75rem",
-                    }}
-                >
+            <li className="flex flex-col gap-y-2">
+                <p className="text-sm text-zinc-400">优先级</p>
+                <ul className="flex gap-x-3" onClick={handleClick}>
                     <PriorityRadio priority={3} active={isItActive(3)} />
                     <PriorityRadio priority={2} active={isItActive(2)} />
                     <PriorityRadio priority={1} active={isItActive(1)} />

@@ -11,7 +11,6 @@ const GlobalStyle = createGlobalStyle`
     body {
         width: 100%;
         height: 100%;
-        font-size: 16px;
     }
 
     #root {
@@ -20,7 +19,9 @@ const GlobalStyle = createGlobalStyle`
     }
 
     ::-webkit-scrollbar {
+        display: none;
         width: 0.25rem;
+        transition: all 1s ease-in-out;
     }
 
     ::-webkit-scrollbar-thumb {
