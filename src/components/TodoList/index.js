@@ -14,7 +14,7 @@ const TodoList = memo((props) => {
                 sx={{
                     display: "flex",
                     flexFlow: "column nowrap",
-                    gap: "1rem 0",
+                    gap: "0.5rem 0",
                     width: "100%",
                 }}
             >

@@ -1,9 +1,12 @@
+import dayjs from "dayjs";
 import "dayjs/locale/zh-cn";
-import { Fragment } from "react";
 import GlobalStyle from "./GlobalStyle";
+import "react-toastify/dist/ReactToastify.css";
+import { ToastContainer, toast } from "react-toastify";
+import { Fragment, useEffect, useContext } from "react";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 
-import StoreProvider from "./store/store";
+import StoreProvider, { StoreContext } from "./store/store";
 
 import Layout from "./components/Layout";
 import SignInPage from "./routes/signin";
@@ -12,13 +15,14 @@ import WelcomePage from "./routes/welcome";
 import NotFound from "./routes/404/404";
 import TodayPage from "./routes/today";
 import FourQuadrant from "./routes/FourQuadrant";
+import { getTodoList } from "./api/todo";
 
 function isValidToken() {
-    const token = localStorage.getItem("authToken");
+    // const token = localStorage.getItem("authToken");
 
-    if (!token) {
-        return false;
-    }
+    // if (!token) {
+    //     return false;
+    // }
 
     return true;
 }
@@ -28,6 +32,58 @@ const PublicRoute = ({ element }) => {
 };
 
 const PrivateRoute = ({ element }) => {
+    const { store, setStore } = useContext(StoreContext);
+
+    useEffect(() => {
+        (async () => {
+            try {
+                const result = await getTodoList();
+
+                result.sort((a, b) => b.id - a.id);
+                setStore((prev) => ({ ...prev, todoList: result }));
+            } catch (err) {
+                console.error(err);
+            }
+        })();
+    }, [setStore]);
+
+    useEffect(() => {
+        let timer = null;
+        const { todoList } = store;
+        if (todoList.length > 0) {
+            timer = setInterval(() => {
+                const curTime = dayjs().locale("zh-cn");
+                todoList
+                    .filter((todo) => !todo.isDone && todo.alarm)
+                    .forEach((todo) => {
+                        const { alarm } = todo,
+                            delta = curTime.diff(alarm, "minute", true);
+                        console.log(alarm, curTime, delta, Math.floor(delta));
+                        if (Math.floor(delta) === 0) {
+                            notify();
+                        }
+                    });
+            }, 60 * 1000);
+        }
+
+        return () => {
+            clearInterval(timer);
+        };
+    }, [store]);
+
+    function notify() {
+        toast("上号！", {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+        });
+    }
+
     return isValidToken() ? element : <Navigate to="/" />;
 };
 
@@ -68,6 +124,7 @@ function App() {
                         <Route path="*" element={<NotFound />} />
                     </Routes>
                 </BrowserRouter>
+                <ToastContainer />
             </StoreProvider>
         </Fragment>
     );

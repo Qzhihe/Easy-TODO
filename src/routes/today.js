@@ -2,14 +2,7 @@ import dayjs from "dayjs";
 import styled from "styled-components";
 import localizedFormat from "dayjs/plugin/localizedFormat";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-    useMemo,
-    useState,
-    Fragment,
-    useEffect,
-    useContext,
-    useCallback,
-} from "react";
+import { useState, Fragment, useEffect, useContext } from "react";
 
 import {
     Box,
@@ -38,7 +31,7 @@ import {
 import { faSun } from "@fortawesome/free-regular-svg-icons";
 
 import TodoList from "../components/TodoList";
-import CalendarPicker from "../components/CalendarPicker";
+import TimePicker from "../components/TimePicker";
 import PriorityPicker from "../components/PriorityPicker";
 
 import { sendRequest } from "../utils/request";
@@ -47,8 +40,8 @@ import { getPriorityProp } from "../utils/priority";
 
 import { StoreContext } from "../store/store";
 
-import { addTodo, deleteTodo, getTodoList, updateTodo } from "../api/todo";
 import { getUserInfo } from "../api/app";
+import { addTodo, deleteTodo, updateTodo } from "../api/todo";
 
 dayjs.extend(localizedFormat);
 
@@ -65,88 +58,31 @@ const defaultNextTodo = {
 const TodayPage = (props) => {
     const { store, setStore } = useContext(StoreContext);
 
-    const [hasChanged, setHasChanged] = useState(false);
     const [openDialog, setOpenDialog] = useState(false);
     const [showDetail, setShowDetail] = useState(false);
     const [cpltIcon, setCpltIcon] = useState(faCircleNotch);
     const [nextTodo, setNextTodo] = useState(defaultNextTodo);
     const [selectedTodo, setSelectedTodo] = useState(defaultNextTodo);
-    // CalendarPicker
-    const [calendarPickerData, setCalendarPickerData] = useState(null);
-    const [calendarPickerAnchor, setCalendarPickerAnchor] = useState(null);
-    // PriorityPicker
-    const [priorityPickerData, setPriorityPickerData] = useState(null);
-    const [priorityPickerAnchor, setPriorityPickerAnchor] = useState(null);
-
-    // PriorityPicker
-    const priorityMenuData = useMemo(
-        () => ({
-            anchorEl: priorityPickerAnchor,
-            open: !!priorityPickerAnchor,
-            onClick: handlePriorityPickerShut,
-            onClose: handlePriorityPickerShut,
-        }),
-        [priorityPickerAnchor]
-    );
-
-    const handlePriorityChange = useCallback(
-        (priority) => {
-            priorityPickerData.setter({
-                ...priorityPickerData.state,
-                priority,
-            });
-        },
-        [priorityPickerData]
-    );
-
-    // CalendarPicker
-    const calendarMenuData = useMemo(
-        () => ({
-            anchorEl: calendarPickerAnchor,
-            open: !!calendarPickerAnchor,
-            onClose: handleCalendarPickerShut,
-        }),
-        [calendarPickerAnchor]
-    );
-
-    const handleCalendarChange = useCallback(
-        (date, status) => {
-            if (status === "finish") {
-                handleCalendarPickerShut();
-            }
-            calendarPickerData.setter({ ...calendarPickerData.state, date });
-        },
-        [calendarPickerData]
-    );
+    const [priorityPickerHandler, setPriorityPickerHandler] = useState(null);
+    const [timePickerHandler, setTimePickerHandler] = useState(null);
 
     const todoList = store.todoList;
     const doneList = todoList.filter((item) => item.isDone);
     const undoneList = todoList.filter((item) => !item.isDone);
 
     useEffect(() => {
-        (async () => {
-            try {
-                const result = await getUserInfo();
-                if (result.code === 20000) {
-                    localStorage.setItem('userId', result.data.id);
-                } else {
-                    throw(new Error('用户信息拿取失败'));
-                }
-            } catch (err) {
-                console.error(err);
-            }
-        })();
-
-        (async () => {
-            try {
-                const result = await getTodoList();
-
-                result.sort((a, b) => b.id - a.id);
-                setStore((prev) => ({ ...prev, todoList: result }));
-            } catch (err) {
-                console.error(err);
-            }
-        })(); 
+        // (async () => {
+        //     try {
+        //         const result = await getUserInfo();
+        //         if (result.code === 20000) {
+        //             localStorage.setItem('userId', result.data.id);
+        //         } else {
+        //             throw(new Error('用户信息拿取失败'));
+        //         }
+        //     } catch (err) {
+        //         console.error(err);
+        //     }
+        // })();
     }, [setStore]);
 
     function handleTitleChange(ev) {
@@ -156,25 +92,67 @@ const TodayPage = (props) => {
     // PriorityPicker
     function handlePriorityPickerOpen(state, setter) {
         return (ev) => {
-            setPriorityPickerAnchor(ev.target);
-            setPriorityPickerData({ state, setter });
+            setPriorityPickerHandler({
+                state: { ...state },
+                setter,
+                anchor: ev.target,
+            });
         };
     }
 
     function handlePriorityPickerShut() {
-        setPriorityPickerAnchor(null);
+        setPriorityPickerHandler(null);
     }
 
-    // CalendarPicker
-    function handleCalendarPickOpen(state, setter) {
+    function handlePriorityChange(priority) {
+        const { state, setter } = priorityPickerHandler;
+
+        setter({ ...state, priority });
+    }
+
+    // TimePicker
+    function handleTimePickerOpen(state, setter) {
+        // Notification.requestPermission();
         return (ev) => {
-            setCalendarPickerAnchor(ev.target);
-            setCalendarPickerData({ state, setter });
+            setTimePickerHandler({
+                state: { ...state },
+                setter,
+                anchor: ev.target,
+            });
         };
     }
 
-    function handleCalendarPickerShut() {
-        setCalendarPickerAnchor(null);
+    function handleTimePickerShut() {
+        setTimePickerHandler(null);
+    }
+
+    function handleTimePickerCommit() {
+        const { state, setter } = timePickerHandler;
+        setter({ ...state });
+    }
+
+    function handleCalendarChange(date, status) {
+        const { state } = timePickerHandler;
+        setTimePickerHandler({
+            ...timePickerHandler,
+            state: { ...state, date },
+        });
+    }
+
+    function handleReminderChange(alarm) {
+        const { state } = timePickerHandler;
+        setTimePickerHandler({
+            ...timePickerHandler,
+            state: { ...state, alarm },
+        });
+    }
+
+    function handleTimePickerReset() {
+        const { state } = timePickerHandler;
+        setTimePickerHandler({
+            ...timePickerHandler,
+            state: { ...state, date: null, alarm: null },
+        });
     }
 
     async function handleInputEnter(ev) {
@@ -229,20 +207,17 @@ const TodayPage = (props) => {
 
     function handleDetialTitleChange(event) {
         let newTitle = event.target.value;
-        setHasChanged(true);
         setSelectedTodo({ ...selectedTodo, title: newTitle });
     }
 
     function handleDetailDescChange(event) {
         let newDesc = event.target.value;
-        setHasChanged(true);
         setSelectedTodo({ ...selectedTodo, description: newDesc });
     }
 
     function handleDetailCplt() {
         setSelectedTodo({ ...selectedTodo, isDone: !selectedTodo.isDone });
         setCpltIcon(cpltIcon === faCircleCheck ? faCircleNotch : faCircleCheck);
-        setHasChanged(true);
     }
 
     function makeConfirm() {
@@ -260,7 +235,6 @@ const TodayPage = (props) => {
 
                 setStore((prev) => ({ ...prev, todoList: deletedTodoList }));
 
-                setHasChanged(false);
                 setShowDetail(false);
             }
         } catch (err) {
@@ -282,7 +256,6 @@ const TodayPage = (props) => {
 
                 setStore((prev) => ({ ...prev, todoList: updatedTodoList }));
 
-                setHasChanged(false);
                 setShowDetail(false);
             }
         } catch (err) {
@@ -291,7 +264,6 @@ const TodayPage = (props) => {
     }
 
     function handleCancel() {
-        setHasChanged(false);
         setShowDetail(false);
     }
 
@@ -441,7 +413,7 @@ const TodayPage = (props) => {
                                         }
                                     >
                                         <IconButton
-                                            onClick={handleCalendarPickOpen(
+                                            onClick={handleTimePickerOpen(
                                                 nextTodo,
                                                 setNextTodo
                                             )}
@@ -541,7 +513,7 @@ const TodayPage = (props) => {
                                     }
                                 >
                                     <IconButton
-                                        onClick={handleCalendarPickOpen(
+                                        onClick={handleTimePickerOpen(
                                             selectedTodo,
                                             setSelectedTodo
                                         )}
@@ -607,22 +579,6 @@ const TodayPage = (props) => {
                                     </IconButton>
                                 </Tooltip>
                             </Box>
-                            {/* <Box
-                            sx={{
-                                width: "100%",
-                            }}
-                        >
-                            <Slider
-                                aria-label="Temperature"
-                                defaultValue={0}
-                                // getAriaValueText={valuetext}
-                                valueLabelDisplay="auto"
-                                step={10}
-                                marks
-                                min={0}
-                                max={100}
-                            />
-                        </Box> */}
 
                             <Box
                                 id="title"
@@ -704,56 +660,53 @@ const TodayPage = (props) => {
                                 }}
                             >
                                 <Button
+                                    onClick={handleCancel}
                                     sx={{
                                         width: "40%",
                                         color: "black",
                                     }}
-                                    onClick={() => {
-                                        handleCancel();
-                                    }}
                                 >
                                     取消
                                 </Button>
-                                {!hasChanged ? (
-                                    <Button
-                                        sx={{
-                                            width: "40%",
-                                            color: "black",
-                                        }}
-                                        disabled
-                                    >
-                                        保存
-                                    </Button>
-                                ) : (
-                                    <Button
-                                        sx={{
-                                            width: "40%",
-                                            color: "black",
-                                        }}
-                                        onClick={() => {
-                                            handleSubmit();
-                                        }}
-                                    >
-                                        保存
-                                    </Button>
-                                )}
+
+                                <Button
+                                    onClick={handleSubmit}
+                                    sx={{
+                                        width: "40%",
+                                        color: "black",
+                                    }}
+                                >
+                                    保存
+                                </Button>
                             </Box>
                         </Card>
                     </Slide>
                 )}
             </Box>
 
-            <PriorityPicker
-                selectedPriority={priorityPickerData?.state.priority}
-                handlePriorityChange={handlePriorityChange}
-                MenuData={priorityMenuData}
-            />
+            {priorityPickerHandler && (
+                <PriorityPicker
+                    anchorEl={priorityPickerHandler.anchor}
+                    open={!!priorityPickerHandler}
+                    value={priorityPickerHandler.state}
+                    onClick={handlePriorityPickerShut}
+                    onClose={handlePriorityPickerShut}
+                    onPriorityChange={handlePriorityChange}
+                />
+            )}
 
-            <CalendarPicker
-                selectedDate={calendarPickerData?.state.date}
-                handleCalendarChange={handleCalendarChange}
-                MenuData={calendarMenuData}
-            />
+            {timePickerHandler && (
+                <TimePicker
+                    anchorEl={timePickerHandler.anchor}
+                    open={!!timePickerHandler}
+                    value={timePickerHandler.state}
+                    onClose={handleTimePickerShut}
+                    onReset={handleTimePickerReset}
+                    onCommit={handleTimePickerCommit}
+                    onDateTimeChange={handleCalendarChange}
+                    onReminderChange={handleReminderChange}
+                />
+            )}
 
             <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
                 <DialogTitle>确定要删除该日程吗？</DialogTitle>

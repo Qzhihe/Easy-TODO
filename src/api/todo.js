@@ -2,37 +2,38 @@ import dayjs from "dayjs";
 
 import { sendRequest } from "../utils/request";
 
-export const getTodoList = async () => {
-    let token = localStorage.getItem("authToken");
-    const params = {
-        'token': token,
-    };
-
-    try {
-        const result = await sendRequest({
-            method: "GET",
-            url: "/schedule/info",
-            params: params,
-        });
-        console.log(result);
-
-        return result.data.schedule.map((todo) => formatTodoFromResponce(todo));
-    } catch (err) {
-        throw err;
-    }
-};
 // export const getTodoList = async () => {
+//     let token = localStorage.getItem("authToken");
+//     const params = {
+//         'token': token,
+//     };
+
 //     try {
 //         const result = await sendRequest({
 //             method: "GET",
-//             url: "/schedule/all",
+//             url: "/schedule/info",
+//             params: params,
 //         });
+//         console.log(result);
 
-//         return result.data.map((todo) => formatTodoFromResponce(todo));
+//         return result.data.schedule.map((todo) => formatTodoFromResponce(todo));
 //     } catch (err) {
 //         throw err;
 //     }
 // };
+
+export const getTodoList = async () => {
+    try {
+        const result = await sendRequest({
+            method: "GET",
+            url: "/schedule/all",
+        });
+
+        return result.data.map((todo) => formatTodoFromResponce(todo));
+    } catch (err) {
+        throw err;
+    }
+};
 
 export const addTodo = async (todo) => {
     try {
@@ -79,22 +80,24 @@ export const deleteTodo = async (todo) => {
 };
 
 const formatTodoForRequest = (todo) => {
-    const { id, date, ...others } = todo;
+    const { id, date, alarm, ...others } = todo;
 
     return {
         ...others,
         scheId: id,
         sTime: date && date.toJSON(),
+        alarm: alarm && alarm.toJSON(),
         userId: localStorage.getItem('userId')
     };
 };
 
 const formatTodoFromResponce = (todo) => {
-    const { userId, scheId, sTime, eTime, ...others } = todo;
+    const { userId, scheId, sTime, eTime, alarm, ...others } = todo;
 
     return {
-        id: todo.scheId,
-        date: todo.sTime && dayjs(todo.sTime).locale("zh-cn"),
+        id: scheId,
+        date: sTime && dayjs(sTime).locale("zh-cn"),
+        alarm: alarm && dayjs(alarm).locale("zh-cn"),
         ...others,
     };
 };

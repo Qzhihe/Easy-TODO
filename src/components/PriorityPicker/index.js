@@ -1,18 +1,17 @@
-import { memo } from "react";
 import { Menu } from "@mui/material";
 
 import PriorityRadio from "./PriorityRadio";
 
-const PriorityPicker = memo((props) => {
-    const { selectedPriority, handlePriorityChange, MenuData } = props;
+const PriorityPicker = (props) => {
+    const { value, onPriorityChange, ...others } = props;
 
     function isItActive(priority) {
-        return selectedPriority === priority;
+        return value.priority === priority;
     }
 
     function handleClick(ev) {
         const priority = parseInt(ev.target.getAttribute("data-priority"));
-        handlePriorityChange?.(priority);
+        onPriorityChange(priority);
     }
 
     return (
@@ -23,7 +22,7 @@ const PriorityPicker = memo((props) => {
                     padding: "1rem",
                 },
             }}
-            {...MenuData}
+            {...others}
         >
             <li
                 style={{
@@ -55,6 +54,6 @@ const PriorityPicker = memo((props) => {
             </li>
         </Menu>
     );
-});
+};
 
 export default PriorityPicker;
