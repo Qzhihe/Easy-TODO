@@ -6,7 +6,6 @@ export const doSignup = async (data) => {
         url: "/register/register",
         data: data,
     });
-    console.log(result);
     return result;
 };
 

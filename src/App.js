@@ -50,12 +50,12 @@ const PrivateRoute = ({ element }) => {
             try {
                 const result = await getUserInfo();
                 if (result.code === 20000) {
-                    console.log(result.data);
                     let updateUser = {
                         id: result.data.id,
                         avatar: result.data.avatar,
                         name: result.data.name,
                     };
+                    localStorage.setItem("id", result.data.id);
                     setStore((prev) => ({ ...prev, user: updateUser }));
                 } else {
                     throw new Error("用户信息拿取失败！");

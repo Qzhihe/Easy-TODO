@@ -75,15 +75,15 @@ export default function SignUpPage() {
             email: email, // 邮箱
             password: password, // 密码
         };
-        console.log(userInfo);
 
         try {
             const result = await doSignup(userInfo);
             if (result.code === 20000) {
-                console.log("注册成功");
                 autoSignIn(email, password);
-            } else {
-                throw new Error("有问题有问题");
+            } else if (result.code === 20002) {
+                providerRef.current.enqueueSnackbar("已有账号", {
+                    variant: "warning",
+                });
             }
         } catch (err) {
             providerRef.current.enqueueSnackbar("注册失败", {
@@ -96,7 +96,6 @@ export default function SignUpPage() {
     async function autoSignIn(email, password) {
         try {
             const res = await doLogin(email, password);
-            console.log(res);
             if (res.code === 20000) {
                 localStorage.setItem("authToken", res.data.token);
                 navigate("/views/today", { replace: true });
