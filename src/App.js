@@ -1,22 +1,21 @@
 import "./index.css";
 import dayjs from "dayjs";
 import "dayjs/locale/zh-cn";
+import TodayPage from "./routes/today";
+import NotFound from "./routes/404/404";
+import { getUserInfo } from "./api/app";
 import GlobalStyle from "./GlobalStyle";
-import "react-toastify/dist/ReactToastify.css";
-import { ToastContainer, toast } from "react-toastify";
-import { Fragment, useEffect, useContext } from "react";
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
-
-import StoreProvider, { StoreContext } from "./store/store";
-
+import { getTodoList } from "./api/todo";
 import Layout from "./components/Layout";
 import SignInPage from "./routes/signin";
 import SignUpPage from "./routes/signup";
 import WelcomePage from "./routes/welcome";
-import NotFound from "./routes/404/404";
-import TodayPage from "./routes/today";
+import "react-toastify/dist/ReactToastify.css";
 import FourQuadrant from "./routes/FourQuadrant";
-import { getTodoList } from "./api/todo";
+import { ToastContainer, toast } from "react-toastify";
+import { Fragment, useEffect, useContext } from "react";
+import StoreProvider, { StoreContext } from "./store/store";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 
 function isValidToken() {
     // const token = localStorage.getItem("authToken");
@@ -42,6 +41,25 @@ const PrivateRoute = ({ element }) => {
 
                 result.sort((a, b) => b.id - a.id);
                 setStore((prev) => ({ ...prev, todoList: result }));
+            } catch (err) {
+                console.error(err);
+            }
+        })();
+
+        (async () => {
+            try {
+                const result = await getUserInfo();
+                if (result.code === 20000) {
+                    console.log(result.data);
+                    let updateUser = {
+                        id: result.data.id,
+                        avatar: result.data.avatar,
+                        name: result.data.name,
+                    };
+                    setStore((prev) => ({ ...prev, user: updateUser }));
+                } else {
+                    throw new Error("用户信息拿取失败！");
+                }
             } catch (err) {
                 console.error(err);
             }
