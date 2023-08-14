@@ -3,7 +3,8 @@ import { useState, createContext } from "react";
 const initialStore = {
     user: {
         id: "",
-        
+        navatar: "",
+        name: "",
     },
     todoList: [],
 };

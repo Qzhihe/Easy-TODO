@@ -30,7 +30,7 @@ const TodoItem = (props) => {
         event.stopPropagation();
         todo.isDone = !todo.isDone;
         setIcon(icon === faCircleCheck ? faCircleNotch : faCircleCheck);
-        onHandleCplt(todo);
+        onHandleCplt?.(todo);
     }
 
     return (

@@ -71,18 +71,24 @@ const TodayPage = (props) => {
     const undoneList = todoList.filter((item) => !item.isDone);
 
     useEffect(() => {
-        // (async () => {
-        //     try {
-        //         const result = await getUserInfo();
-        //         if (result.code === 20000) {
-        //             localStorage.setItem('userId', result.data.id);
-        //         } else {
-        //             throw(new Error('用户信息拿取失败'));
-        //         }
-        //     } catch (err) {
-        //         console.error(err);
-        //     }
-        // })();
+        (async () => {
+            try {
+                const result = await getUserInfo();
+                if (result.code === 20000) {
+                    console.log(result.data);
+                    let updateUser = {
+                        id: result.data.id,
+                        avatar: result.data.avatar,
+                        name: result.data.name,
+                    };
+                    setStore((prev) => ({ ...prev, user: updateUser }));
+                } else {
+                    throw new Error("用户信息拿取失败！");
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        })();  
     }, [setStore]);
 
     function handleTitleChange(ev) {

@@ -15,9 +15,7 @@ import {
     Typography,
 } from "@mui/material";
 
-import {
-    faMagnifyingGlass,
-} from "@fortawesome/free-solid-svg-icons";
+import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
 import { StoreContext } from "../store/store";
 import { sendRequest } from "../utils/request";
 import dayjs from "dayjs";
@@ -33,6 +31,7 @@ const Topbar = (props) => {
 
     const { store, setStore } = useContext(StoreContext);
     const todoList = store.todoList;
+    const user = store.user;
 
     useEffect(() => {
         sendRequest({
@@ -93,9 +92,10 @@ const Topbar = (props) => {
     async function userLogOut() {
         try {
             const result = await doLogout();
-            console.log(result);
             if (result.code === 20000) {
-                localStorage.removeItem("authToken", "authName");
+                localStorage.removeItem("authToken");
+                localStorage.removeItem("authName");
+                localStorage.removeItem("userId");
                 setLogoutOpen(false);
                 window.location.reload(); // 强制的原因是这里的重定向逻辑和配置中路由守卫逻辑冲突，但我不太明白为什么会冲突，可能没有达到组件重新渲染的条件
             } else {
@@ -133,8 +133,12 @@ const Topbar = (props) => {
                     />
                     <input type="text" onClick={handleInputClick} />
                 </div>
-                <div id="avatar" onContextMenu={handleAvatarClick}></div>
+                <Awa
+                    avatar={user?.avatar}
+                    onContextMenu={handleAvatarClick}
+                ></Awa>
             </AppBar>
+
             <Dialog
                 open={open}
                 onClose={() => {
@@ -184,13 +188,13 @@ const Topbar = (props) => {
                     sx={{
                         cursor: "pointer",
                         display: "flex",
-                        flexFlow: 'row nowrap',
+                        flexFlow: "row nowrap",
                         justifyContent: "center",
                         alignItems: "center",
-                        padding: '.5rem 1rem',
+                        padding: ".5rem 1rem",
                     }}
                 >
-                    <Typography fontSize={'.825rem'}>登出</Typography>
+                    <Typography fontSize={".825rem"}>登出</Typography>
                 </Box>
             </Menu>
         </Fragment>
@@ -249,4 +253,18 @@ const AppBar = styled(MuiAppBar)`
 
         background-color: white;
     }
+`;
+
+const Awa = styled("div")`
+    justify-self: end;
+
+    width: 2.5rem;
+    height: 2.5rem;
+
+    border-radius: 50%;
+
+    background-color: white;
+    background-image: ${(props) => `url(${props?.avatar})`};
+    background-size: cover;
+    background-position: center;
 `;

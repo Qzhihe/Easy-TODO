@@ -13,14 +13,27 @@ import validate from "../utils/validate";
 import { SnackbarProvider } from "notistack";
 import { Dialog } from "@mui/material";
 import { Input } from "@mui/base";
+import { doLogin, doSignup } from "../api/app";
+import { useNavigate } from "react-router-dom";
 
 const defaultTheme = createTheme();
 
 export default function SignUpPage() {
+    const defaultUserInfo = {
+        avatar: "",
+        deleted: 0,
+        email: "",
+        password: "",
+        phone: "",
+        roleIdList: [0],
+        status: 1,
+        username: "",
+    };
     const providerRef = useRef();
     const [open, setOpen] = useState(false);
+    const navigate = useNavigate();
     // 验证注册表单内容
-    const checkForm = (data) => {
+    const checkForm = async (data) => {
         let email = data.get("email"),
             password = data.get("psw"),
             password1 = data.get("psw1");
@@ -57,11 +70,31 @@ export default function SignUpPage() {
 
         // 发送添加请求
         let userInfo = {
-            email, // 邮箱
-            password, // 密码
+            ...defaultUserInfo,
+            username: email,
+            email: email, // 邮箱
+            password: password, // 密码
         };
-
         console.log(userInfo);
+
+        try {
+            const result = await doSignup(userInfo);
+            if (result.code === 20000) {
+                console.log("注册成功，但好像没什么卵用");
+
+                const res = await doLogin(email, password);
+                if (res === 20000) {
+                    navigate("/views/today", { replace: true });
+                }
+            } else {
+                throw(new Error('jwt无效'));
+            }
+        } catch (err) {
+            providerRef.current.enqueueSnackbar("注册失败", {
+                variant: "warning",
+            });
+            console.error(err);
+        }
     };
 
     // 点击“注册”提交表单
@@ -75,13 +108,9 @@ export default function SignUpPage() {
         setOpen(true);
     };
 
-    const handleFileChange = () => {
+    const handleFileChange = () => {};
 
-    };
-
-    const handleUpload = () => {
-
-    };
+    const handleUpload = () => {};
 
     return (
         <SnackbarProvider ref={providerRef} maxSnack={3}>
@@ -143,7 +172,7 @@ export default function SignUpPage() {
                                         name="psw1"
                                         label="重复密码 - 与密码一致"
                                         type="password"
-                                        id="psw"
+                                        id="psw1"
                                         autoComplete="new-password"
                                     />
                                 </Grid>
@@ -179,7 +208,9 @@ export default function SignUpPage() {
                 >
                     诶嘿不好意思哦，这里还没有完成，原因是我还没学会。退出对话框的话点击一下对话框以外的任意位置就好。
                     <Input type="file" onChange={handleFileChange} />
-                    <Button onClick={handleUpload}>更新</Button>
+                    <Button type="submit" onClick={handleUpload}>
+                        更新
+                    </Button>
                 </Dialog>
             </ThemeProvider>
         </SnackbarProvider>

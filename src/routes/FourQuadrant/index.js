@@ -12,6 +12,7 @@ import "./index.css";
 import TodoList from "../../components/TodoList";
 
 import { StoreContext } from "../../store/store";
+import { sendRequest } from "../../utils/request";
 
 const FourQuadrant = () => {
     const { store, setStore } = useContext(StoreContext);
@@ -54,6 +55,37 @@ export default FourQuadrant;
 
 const Quadrant = (props) => {
     const { priority, data } = props;
+    const { store, setStore } = useContext(StoreContext);
+    const todoList = store.todoList;
+
+    async function handleCplt(todo) {
+        const { date, id, ...others } = todo;
+        const payload = {
+            ...others,
+            scheId: id,
+            sTime: date && date.toJSON(),
+        };
+        try {
+            const data = await sendRequest({
+                method: "PUT",
+                url: "/schedule",
+                data: payload,
+            });
+            if (data.code === 20000) {
+                const updatedTodoList = todoList.reduce((prev, cur) => {
+                    if (cur.id === todo.id) {
+                        prev.push(todo);
+                    } else {
+                        prev.push(cur);
+                    }
+                    return prev;
+                }, []);
+                setStore((prev) => ({ ...prev, todoList: updatedTodoList }));
+            }
+        } catch (err) {
+            console.error(err);
+        }
+    }
 
     const titleMapping = useRef(
         new Map([
@@ -107,7 +139,7 @@ const Quadrant = (props) => {
                                 没有任务
                             </Typography>
                         ) : (
-                            <TodoList data={data} />
+                            <TodoList data={data} onHandleCplt={handleCplt} />
                         )}
                     </div>
                 </div>

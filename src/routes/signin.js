@@ -1,4 +1,4 @@
-import * as React from "react";
+import{ useRef } from 'react';
 import { SnackbarProvider } from "notistack";
 import { useNavigate } from "react-router-dom";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
@@ -21,13 +21,11 @@ const defaultTheme = createTheme();
 
 const SignInPage = () => {
     const navigate = useNavigate();
-    const providerRef = React.useRef();
+    const providerRef = useRef();
 
     async function handleSubmit(event) {
         event.preventDefault();
-
         const data = new FormData(event.currentTarget);
-
         const name = data.get("name");
         const pwd = data.get("password");
         if (!name) {
@@ -48,7 +46,6 @@ const SignInPage = () => {
 
             if (result.code === 20000) {
                 localStorage.setItem("authToken", result.data.token);
-                localStorage.setItem('authName', name);
                 navigate("/views/today", { replace: true });
             } else {
                 providerRef.current.enqueueSnackbar("密码或账号错误", {

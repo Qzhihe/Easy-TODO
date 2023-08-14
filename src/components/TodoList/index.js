@@ -18,9 +18,9 @@ const TodoList = memo((props) => {
                     width: "100%",
                 }}
             >
-                {data.map((item, idx) => {
+                {data.map(item => {
                     return (
-                        <Fragment key={idx}>
+                        <Fragment key={item.id}>
                             <TodoItem
                                 data={item}
                                 onHandleSelectTodo={onHandleSelectTodo}
