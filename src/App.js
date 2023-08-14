@@ -37,6 +37,9 @@ const PrivateRoute = ({ element }) => {
     useEffect(() => {
         (async () => {
             try {
+                if (!localStorage.getItem("authToken")) {
+                    return;
+                }
                 const result = await getTodoList();
 
                 result.sort((a, b) => b.id - a.id);
