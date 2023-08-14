@@ -27,7 +27,7 @@ export const doLogout = async () => {
 export const getUserInfo = async () => {
     let token = localStorage.getItem("authToken");
     const params = {
-        'token': token,
+        token: token,
     };
     const result = await sendRequest({
         method: "GET",
