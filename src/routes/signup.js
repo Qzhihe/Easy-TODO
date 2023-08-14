@@ -13,14 +13,28 @@ import validate from "../utils/validate";
 import { SnackbarProvider } from "notistack";
 import { Dialog } from "@mui/material";
 import { Input } from "@mui/base";
+import { doLogin, doSignup } from "../api/app";
+import { redirect, useNavigate } from "react-router-dom";
 
 const defaultTheme = createTheme();
 
 export default function SignUpPage() {
+    const defaultUserInfo = {
+        avatar: "",
+        deleted: 0,
+        email: "",
+        // id: 0,
+        password: "string",
+        phone: "string",
+        roleIdList: [0],
+        status: 0,
+        username: "string",
+    };
     const providerRef = useRef();
     const [open, setOpen] = useState(false);
+    const navigate = useNavigate();
     // 验证注册表单内容
-    const checkForm = (data) => {
+    const checkForm = async (data) => {
         let email = data.get("email"),
             password = data.get("psw"),
             password1 = data.get("psw1");
@@ -57,11 +71,29 @@ export default function SignUpPage() {
 
         // 发送添加请求
         let userInfo = {
-            email, // 邮箱
-            password, // 密码
+            ...defaultUserInfo,
+            username: email,
+            email: email, // 邮箱
+            password: password, // 密码
         };
-
         console.log(userInfo);
+
+        try {
+            const result = await doSignup(userInfo);
+            if (result.code === 20000) {
+                console.log("注册成功，但没什么卵用，根本不能登录");
+                
+                const res = await doLogin(email, password);
+                if (res === 20000) {
+                    navigate("/views/today", { replace: true });
+                }
+            }
+        } catch (err) {
+            providerRef.current.enqueueSnackbar("注册失败", {
+                variant: "warning",
+            });
+            console.error(err);
+        }
     };
 
     // 点击“注册”提交表单
@@ -75,13 +107,9 @@ export default function SignUpPage() {
         setOpen(true);
     };
 
-    const handleFileChange = () => {
+    const handleFileChange = () => {};
 
-    };
-
-    const handleUpload = () => {
-
-    };
+    const handleUpload = () => {};
 
     return (
         <SnackbarProvider ref={providerRef} maxSnack={3}>

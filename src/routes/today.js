@@ -69,20 +69,23 @@ const TodayPage = (props) => {
     const todoList = store.todoList;
     const doneList = todoList.filter((item) => item.isDone);
     const undoneList = todoList.filter((item) => !item.isDone);
+    const user = store.user;
 
     useEffect(() => {
-        // (async () => {
-        //     try {
-        //         const result = await getUserInfo();
-        //         if (result.code === 20000) {
-        //             localStorage.setItem('userId', result.data.id);
-        //         } else {
-        //             throw(new Error('用户信息拿取失败'));
-        //         }
-        //     } catch (err) {
-        //         console.error(err);
-        //     }
-        // })();
+        (async () => {
+            try {
+                const result = await getUserInfo();
+                if (result.code === 20000) {
+                    console.log(result.data);
+                    let updateUser = { ...user, id: result.data.id, avatar: result.data.avatar, name: result.data.name };   
+                    setStore((prev) => ({...prev, user: updateUser}));
+                } else {
+                    throw(new Error('用户信息拿取失败！'));
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        })();  
     }, [setStore]);
 
     function handleTitleChange(ev) {

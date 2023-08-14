@@ -1,5 +1,15 @@
 import { sendRequest } from "../utils/request";
 
+export const doSignup = async (data) => {
+    const result = await sendRequest({
+        method: 'POST',
+        url: 'user',
+        data: data,
+    });
+    console.log(result);
+    return result;
+};
+
 export const doLogin = async (username, password) => {
     const result = await sendRequest({
         method: "POST",

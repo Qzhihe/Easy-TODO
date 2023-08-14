@@ -95,7 +95,9 @@ const Topbar = (props) => {
             const result = await doLogout();
             console.log(result);
             if (result.code === 20000) {
-                localStorage.removeItem("authToken", "authName");
+                localStorage.removeItem("authToken");
+                localStorage.removeItem("authName");
+                localStorage.removeItem("userId");
                 setLogoutOpen(false);
                 window.location.reload(); // 强制的原因是这里的重定向逻辑和配置中路由守卫逻辑冲突，但我不太明白为什么会冲突，可能没有达到组件重新渲染的条件
             } else {
