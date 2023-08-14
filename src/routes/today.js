@@ -1,9 +1,17 @@
 import dayjs from "dayjs";
 import styled from "styled-components";
+import TodoList from "../components/TodoList";
+import { StoreContext } from "../store/store";
+import { sendRequest } from "../utils/request";
+import DTRPicker from "../components/DTRPicker";
+import { getCalendarDate } from "../utils/date";
+import { getPriorityProp } from "../utils/priority";
+import { useState, Fragment, useContext } from "react";
+import PriorityPicker from "../components/PriorityPicker";
 import localizedFormat from "dayjs/plugin/localizedFormat";
+import { faSun } from "@fortawesome/free-regular-svg-icons";
+import { addTodo, deleteTodo, updateTodo } from "../api/todo";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useState, Fragment, useEffect, useContext } from "react";
-
 import {
     Box,
     Card,
@@ -18,7 +26,6 @@ import {
     DialogActions,
     TextareaAutosize,
 } from "@mui/material";
-
 import {
     faPlus,
     faFlag,
@@ -28,20 +35,6 @@ import {
     faChevronDown,
     faCalendarDays,
 } from "@fortawesome/free-solid-svg-icons";
-import { faSun } from "@fortawesome/free-regular-svg-icons";
-
-import TodoList from "../components/TodoList";
-import DTRPicker from "../components/DTRPicker";
-import PriorityPicker from "../components/PriorityPicker";
-
-import { sendRequest } from "../utils/request";
-import { getCalendarDate } from "../utils/date";
-import { getPriorityProp } from "../utils/priority";
-
-import { StoreContext } from "../store/store";
-
-import { getUserInfo } from "../api/app";
-import { addTodo, deleteTodo, updateTodo } from "../api/todo";
 
 dayjs.extend(localizedFormat);
 
@@ -69,27 +62,6 @@ const TodayPage = (props) => {
     const todoList = store.todoList;
     const doneList = todoList.filter((item) => item.isDone);
     const undoneList = todoList.filter((item) => !item.isDone);
-
-    useEffect(() => {
-        (async () => {
-            try {
-                const result = await getUserInfo();
-                if (result.code === 20000) {
-                    console.log(result.data);
-                    let updateUser = {
-                        id: result.data.id,
-                        avatar: result.data.avatar,
-                        name: result.data.name,
-                    };
-                    setStore((prev) => ({ ...prev, user: updateUser }));
-                } else {
-                    throw new Error("用户信息拿取失败！");
-                }
-            } catch (err) {
-                console.error(err);
-            }
-        })();  
-    }, [setStore]);
 
     function handleTitleChange(ev) {
         setNextTodo({ ...nextTodo, title: ev.target.value });

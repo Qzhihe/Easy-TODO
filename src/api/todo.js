@@ -34,19 +34,6 @@ export const getTodoList = async () => {
     }
 };
 
-export const getTodoList = async () => {
-    try {
-        const result = await sendRequest({
-            method: "GET",
-            url: "/schedule/all",
-        });
-
-        return result.data.map((todo) => formatTodoFromResponce(todo));
-    } catch (err) {
-        throw err;
-    }
-};
-
 export const addTodo = async (todo) => {
     try {
         const result = await sendRequest({
