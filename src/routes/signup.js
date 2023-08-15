@@ -31,6 +31,7 @@ export default function SignUpPage() {
     };
     const providerRef = useRef();
     const [open, setOpen] = useState(false);
+    const [imgFile, setImgFile] = useState(null);
     const navigate = useNavigate();
     // 验证注册表单内容
     async function checkForm(data) {
@@ -91,7 +92,7 @@ export default function SignUpPage() {
             });
             console.error(err);
         }
-    };
+    }
 
     async function autoSignIn(email, password) {
         try {
@@ -106,7 +107,7 @@ export default function SignUpPage() {
             });
             console.error(err);
         }
-    };
+    }
 
     // 点击“注册”提交表单
     const handleSubmit = (event) => {
@@ -119,9 +120,10 @@ export default function SignUpPage() {
         setOpen(true);
     };
 
-    const handleFileChange = () => {};
-
-    const handleUpload = () => {};
+    const handleFileChange = (event) => {
+        console.log(event.target.files[0]);
+        setImgFile(event.target.files[0]);
+    };
 
     return (
         <SnackbarProvider ref={providerRef} maxSnack={3}>
@@ -218,8 +220,17 @@ export default function SignUpPage() {
                     }}
                 >
                     诶嘿不好意思哦，这里还没有完成，原因是我还没学会。退出对话框的话点击一下对话框以外的任意位置就好。
-                    <Input type="file" onChange={handleFileChange} />
-                    <Button type="submit" onClick={handleUpload}>
+                    <Input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleFileChange}
+                    />
+                    <Button
+                        type="submit"
+                        onClick={() => {
+                            setOpen(false);
+                        }}
+                    >
                         更新
                     </Button>
                 </Dialog>
