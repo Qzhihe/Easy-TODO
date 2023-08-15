@@ -31,7 +31,6 @@ export default function SignUpPage() {
     };
     const providerRef = useRef();
     const [open, setOpen] = useState(false);
-    const [imgFile, setImgFile] = useState(null);
     const navigate = useNavigate();
     // 验证注册表单内容
     async function checkForm(data) {
@@ -121,8 +120,7 @@ export default function SignUpPage() {
     };
 
     const handleFileChange = (event) => {
-        console.log(event.target.files[0]);
-        setImgFile(event.target.files[0]);
+        // console.log(event.target.files[0]);
     };
 
     return (
