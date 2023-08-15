@@ -194,11 +194,17 @@ const TodayPage = (props) => {
 
     function handleDetialTitleChange(event) {
         let newTitle = event.target.value;
+        if (newTitle.length > 15) {
+            return;
+        }
         setSelectedTodo({ ...selectedTodo, title: newTitle });
     }
 
     function handleDetailDescChange(event) {
         let newDesc = event.target.value;
+        if (newDesc.length > 250) {
+            return;
+        }
         setSelectedTodo({ ...selectedTodo, description: newDesc });
     }
 
@@ -231,6 +237,9 @@ const TodayPage = (props) => {
 
     async function handleSubmit() {
         try {
+            if (!selectedTodo.title) {
+                return;
+            }
             const result = await updateTodo(selectedTodo);
 
             if (result) {
@@ -598,7 +607,7 @@ const TodayPage = (props) => {
                                 }}
                             >
                                 <TextareaAutosize
-                                    maxRows="18"
+                                    maxRows="17"
                                     style={{
                                         width: "100%",
                                         fontSize: "0.875rem",
@@ -632,6 +641,17 @@ const TodayPage = (props) => {
                                     onChange={handleDetailDescChange}
                                 />
                             </Box>
+
+                            <Typography
+                                component="p"
+                                style={{
+                                    fontSize: "5px",
+                                    display: "inline-block",
+                                    textAlign: 'right',
+                                }}
+                            >
+                                {selectedTodo.description.length}/250
+                            </Typography>
 
                             <Box
                                 id="submitbtn"
