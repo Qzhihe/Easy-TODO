@@ -13,11 +13,11 @@ export function getCalendarDate(date) {
 
     switch (delta) {
         case 0:
-            return `今天 ${date.format("hh:mm")}`;
+            return `今天 ${date.format("HH:mm")}`;
         case 1:
-            return `明天 ${date.format("hh:mm")}`;
+            return `明天 ${date.format("HH:mm")}`;
         case 2:
-            return `后天 ${date.format("hh:mm")}`;
+            return `后天 ${date.format("HH:mm")}`;
         default:
             return date.locale("zh-cn").format("M月D日");
     }
