@@ -77,7 +77,7 @@ const Topbar = (props) => {
                     todoList: [],
                 });
                 setLogoutOpen(false);
-                window.location.reload(); // 强制的原因是这里的重定向逻辑和配置中路由守卫逻辑冲突，但我不太明白为什么会冲突，可能没有达到组件重新渲染的条件
+                window.location.reload(); 
             } else {
                 throw new Error("登出失败");
             }

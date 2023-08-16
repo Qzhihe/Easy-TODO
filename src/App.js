@@ -61,7 +61,9 @@ const PrivateRoute = ({ element }) => {
                     localStorage.setItem("id", result.data.id);
                     setStore((prev) => ({ ...prev, user: updateUser }));
                 } else {
-                    throw new Error("用户信息拿取失败！");
+                    localStorage.removeItem("id");
+                    localStorage.removeItem("authToken");
+                    window.location.reload(); 
                 }
             } catch (err) {
                 console.error(err);
