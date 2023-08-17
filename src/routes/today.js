@@ -147,7 +147,7 @@ const TodayPage = (props) => {
             try {
                 const result = await addTodo(nextTodo);
 
-                const currentList = [{ ...nextTodo, result }, ...todoList];
+                const currentList = [{ ...nextTodo, id: result.data }, ...todoList];
                 setStore((prev) => ({ ...prev, todoList: currentList }));
 
                 setNextTodo(defaultNextTodo);
