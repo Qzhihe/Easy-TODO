@@ -77,7 +77,7 @@ const Quadrant = (props) => {
                         />
                     </div>
 
-                    <div className="flex flex-col h-full overflow-hidden">
+                    <div className="flex flex-col h-full overflow-auto">
                         {data.length === 0 ? (
                             <p className="m-auto text-zinc-400">没有任务</p>
                         ) : (
@@ -87,9 +87,9 @@ const Quadrant = (props) => {
                 </div>
             </Card>
 
-            <Menu>
+            {/* <Menu>
                 
-            </Menu>
+            </Menu> */}
         </Fragment>
     );
 };
