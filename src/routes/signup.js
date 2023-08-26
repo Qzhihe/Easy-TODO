@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { memo, useRef, useState } from "react";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -11,14 +11,22 @@ import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import validate from "../utils/validate";
 import { SnackbarProvider } from "notistack";
-import { Dialog } from "@mui/material";
+import {
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+} from "@mui/material";
 import { Input } from "@mui/base";
 import { doLogin, doSignup } from "../api/app";
 import { useNavigate } from "react-router-dom";
+import { centerCrop, makeAspectCrop, ReactCrop } from "react-image-crop";
+import useDebounceEffect from "../utils/useDebouncedEffect";
+import canvasPreview from "../utils/canvasPreview";
 
 const defaultTheme = createTheme();
 
-export default function SignUpPage() {
+const SignUpPage = memo(() => {
     const defaultUserInfo = {
         avatar: "",
         deleted: 0,
@@ -71,7 +79,8 @@ export default function SignUpPage() {
         // 发送添加请求
         let userInfo = {
             ...defaultUserInfo,
-            username: email,
+            avatar: avatar, // 头像
+            username: email, // 用户名
             email: email, // 邮箱
             password: password, // 密码
         };
@@ -89,7 +98,6 @@ export default function SignUpPage() {
             providerRef.current.enqueueSnackbar("注册失败", {
                 variant: "warning",
             });
-            console.error(err);
         }
     }
 
@@ -104,24 +112,106 @@ export default function SignUpPage() {
             providerRef.current.enqueueSnackbar("自动登录失败", {
                 variant: "warning",
             });
-            console.error(err);
         }
     }
 
     // 点击“注册”提交表单
-    const handleSubmit = (event) => {
+    function handleSubmit(event) {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
         checkForm(data);
-    };
+    }
 
-    const handleAvatarClick = () => {
-        setOpen(true);
-    };
+    const aspect = 1 / 1; // 图片比例
+    const imgRef = useRef(null); // 初始图片标识
+    const previewCanvasRef = useRef(null); // 剪裁预览图片标识
+    const [img, setImg] = useState(""); // 初始图片src
+    const [avatar, setAvatar] = useState(""); // 最终图片数据（放注册信息中，类型等后期规范）
+    const [crop, setCrop] = useState(undefined); // 待剪切图画
+    const [completedCrop, setCompletedCrop] = useState(); // 剪切后图画
+    // const blobUrlRef = useRef("");
+    // const hiddenAnchorRef = useRef(null); // 隐藏图片下载标识
+    useDebounceEffect(
+        async () => {
+            if (
+                completedCrop?.width &&
+                completedCrop?.height &&
+                imgRef.current &&
+                previewCanvasRef.current
+            ) {
+                canvasPreview(
+                    imgRef.current,
+                    previewCanvasRef.current,
+                    completedCrop,
+                    1,
+                    0
+                );
+            }
+        },
+        100,
+        [completedCrop]
+    );
 
-    const handleFileChange = (event) => {
-        // console.log(event.target.files[0]);
-    };
+    // 更改图片
+    function handleFileChange(event) {
+        const file = event.target.files[0];
+        if (file) {
+            setCrop(undefined);
+            const reader = new FileReader();
+            reader.addEventListener("load", () => {
+                setImg(reader.result?.toString() || "");
+            });
+            reader.readAsDataURL(file);
+        }
+    }
+    // 创建一个剪裁框
+    function centerAspectCrop(width, height) {
+        return centerCrop(
+            makeAspectCrop({ unit: "%", width: 100 }, aspect, width, height),
+            width,
+            height
+        );
+    } 
+    // 剪裁加载
+    function onImageLoad(event) {
+        const { width, height } = event.currentTarget;
+        setCrop(centerAspectCrop(width, height, aspect));
+    }
+    function handleComplete(c) {
+        if (c?.width < 100) {
+            providerRef.current.enqueueSnackbar("图片剪裁得太小啦！", {
+                variant: "warning",
+            });
+            return;
+        }
+        setCompletedCrop(c);
+    }
+    // 点击更新，储存剪裁图片
+    function onUpdateClick() {
+        if (!imgRef.current) {
+            providerRef.current.enqueueSnackbar("没有上传任何图片", {
+                variant: "warning",
+            });
+            return;
+        }
+        if (previewCanvasRef.current) {
+            previewCanvasRef.current.toBlob((blob) => {
+                if (!blob) {
+                    throw new Error("Failed to create blob");
+                }
+                setAvatar(blob); // 待传入的头像参数
+
+                // 裁剪图片下载测试
+                // if (blobUrlRef.current) {
+                //     URL.revokeObjectURL(blobUrlRef.current);
+                // }
+                // blobUrlRef.current = URL.createObjectURL(blob);
+                // hiddenAnchorRef.current.href = blobUrlRef.current;
+                // hiddenAnchorRef.current.click();
+            });
+        }
+        setOpen(false);
+    }
 
     return (
         <SnackbarProvider ref={providerRef} maxSnack={3}>
@@ -142,7 +232,7 @@ export default function SignUpPage() {
                     >
                         <Avatar
                             sx={{ m: 1, bgcolor: "orange" }}
-                            onClick={handleAvatarClick}
+                            onClick={() => setOpen(true)}
                         ></Avatar>
                         <Typography component="h1" variant="h5">
                             注册
@@ -211,28 +301,89 @@ export default function SignUpPage() {
                         </Box>
                     </Box>
                 </Container>
+
                 <Dialog
                     open={open}
                     onClose={() => {
                         setOpen(false);
                     }}
                 >
-                    诶嘿不好意思哦，这里还没有完成，原因是我还没学会。退出对话框的话点击一下对话框以外的任意位置就好。
-                    <Input
-                        type="file"
-                        accept="image/*"
-                        onChange={handleFileChange}
-                    />
-                    <Button
-                        type="submit"
-                        onClick={() => {
-                            setOpen(false);
+                    <DialogTitle
+                        style={{
+                            userSelect: "none",
                         }}
                     >
-                        更新
-                    </Button>
+                        更换头像(请框取头像)
+                    </DialogTitle>
+                    <DialogContent
+                        style={{
+                            height: "100%",
+                            overflow: "auto",
+                        }}
+                    >
+                        {img && (
+                            <ReactCrop
+                                style={{
+                                    width: "100%",
+                                    height: "100%",
+                                }}
+                                crop={crop}
+                                aspect={aspect}
+                                onChange={(_, precentCrop) =>
+                                    setCrop(precentCrop)
+                                }
+                                onComplete={(c) => handleComplete(c)}
+                            >
+                                <img
+                                    ref={imgRef}
+                                    src={img}
+                                    onLoad={onImageLoad}
+                                    alt="Avatar"
+                                    style={{
+                                        maxWidth: "100%",
+                                        maxHeight: "100%",
+                                        transform: "scale(1)",
+                                    }}
+                                />
+                            </ReactCrop>
+                        )}
+                        {!!completedCrop && (
+                            <canvas
+                                ref={previewCanvasRef}
+                                style={{
+                                    objectFit: "contain",
+                                    border: "1px solid black",
+                                    width: completedCrop.width,
+                                    height: completedCrop.height,
+                                }}
+                            />
+                        )}
+                    </DialogContent>
+                    <DialogActions>
+                        <Input
+                            type="file"
+                            accept="image/*"
+                            onChange={handleFileChange}
+                        />
+                        <Button
+                            onClick={() => {
+                                setOpen(false);
+                            }}
+                        >
+                            取消
+                        </Button>
+                        <Button onClick={onUpdateClick}>更新</Button>
+                        {/* <a
+                            ref={hiddenAnchorRef}
+                            download
+                            style={{ visibility: "hidden" }}
+                        >
+                            hidden download
+                        </a> */}
+                    </DialogActions>
                 </Dialog>
             </ThemeProvider>
         </SnackbarProvider>
     );
-}
+});
+export default SignUpPage;
